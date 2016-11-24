@@ -30,7 +30,7 @@ include_directories(
 )
 
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-target_link_libraries(${project_name} tools file-manager optimization crf dictionary tokenizer tagsetConverter)
+target_link_libraries(${project_name} tools file-manager optimization crf dictionary tokenizer tagset-converter)
 
 add_executable(${project_name}-app main.cpp)
 target_link_libraries(${project_name}-app ${project_name})

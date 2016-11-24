@@ -37,7 +37,7 @@ elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-target_link_libraries(${project_name} tools tokenizer tagsetConverter file-manager crf disambiguator tagsetconstants dictionary)
+target_link_libraries(${project_name} tools tokenizer tagset-converter file-manager crf disambiguator tagsetconstants dictionary)
 
 add_executable(${project_name}-app main.cpp)
 target_link_libraries(${project_name}-app ${project_name})
