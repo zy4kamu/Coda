@@ -44,6 +44,6 @@ include_directories(
 add_library(${TARGET_NAME} ${LIBRARY_TYPE} ${tagsetConverter_SOURCES} ${tagsetConverter_HEADERS})
 set_target_properties(${TARGET_NAME} PROPERTIES DEFINE_SYMBOL tagsetConverter_EXPORTS)
 add_executable(${TARGET_NAME}-app ${tagsetConverter_SOURCE_DIR}/main.cpp)
-target_link_libraries(${TARGET_NAME} tools csvManager)
+target_link_libraries(${TARGET_NAME} tools file-manager)
 target_link_libraries(${TARGET_NAME}-app ${TARGET_NAME})
 ADD_DEFINITIONS("-Wall" "-fPIC")

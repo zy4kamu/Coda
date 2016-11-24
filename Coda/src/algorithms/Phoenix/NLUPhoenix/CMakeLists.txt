@@ -84,6 +84,6 @@ include_directories(
 add_library(${TARGET_NAME} ${LIBRARY_TYPE} ${NLUPhoenix_SOURCES} ${NLUPhoenix_HEADERS})
 set_target_properties(${TARGET_NAME} PROPERTIES DEFINE_SYMBOL NLUPhoenix_EXPORTS)
 add_executable(${TARGET_NAME}-app ${NLUPhoenix_SOURCE_DIR}/main_grammar_test.cpp)
-target_link_libraries(${TARGET_NAME} sqlite-client tokenizer dictionary csvManager regexptools tools disambiguator timexnormalizer tagsetconstants)
+target_link_libraries(${TARGET_NAME} sqlite-client tokenizer dictionary file-manager regexptools tools disambiguator timexnormalizer tagsetconstants)
 target_link_libraries(${TARGET_NAME}-app ${TARGET_NAME})
 ADD_DEFINITIONS("-Wall" "-fPIC")

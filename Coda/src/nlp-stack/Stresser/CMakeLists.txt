@@ -26,7 +26,7 @@ include_directories(
 )
 
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-target_link_libraries(${project_name} tools csvManager tokenizer crf dictionary disambiguator)
+target_link_libraries(${project_name} tools file-manager tokenizer crf dictionary disambiguator)
 
 add_executable(${project_name}-app main.cpp)
 target_link_libraries(${project_name}-app ${project_name})

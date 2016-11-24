@@ -11,6 +11,8 @@
 
 include (../../common_includes.cmake)
 
+set(project_name syntax-parser)
+
 include_directories(
     ${crf_subfolders}
     ${disambiguator_subfolders}
@@ -36,7 +38,7 @@ include_directories(
 )
 
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-target_link_libraries(${project_name} tools csvManager crf sentence-splitter tokenizer disambiguator optimization gomp)
+target_link_libraries(${project_name} tools file-manager crf sentence-splitter tokenizer disambiguator optimization gomp)
 
 add_executable(${project_name}-app main.cpp)
 target_link_libraries(${project_name}-app ${project_name})
