@@ -6,4 +6,6 @@ file(GLOB sources "*.c" "*/*.c" "*/*/*.c" "*.cpp" "*/*.cpp" "*/*/*.cpp")
 file(GLOB headers "*.h" "*/*.h" "*/*/*.h")
 file(GLOB sourceheaders "*.hpp" "*/*.hpp" "*/*/*.hpp")
 
+file(GLOB crf_subfolders ${PROJECT_ROOT_DIR}/algorithms/CRF/*/)
+
 ADD_DEFINITIONS("-Wall" "-fPIC")

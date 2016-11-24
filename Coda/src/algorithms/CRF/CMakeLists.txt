@@ -10,7 +10,6 @@
 #          Stepan Muzychka <s.muzychka@samsung.com>  
 
 include (../../common_includes.cmake)
-file(GLOB crf_subfolders ${PROJECT_ROOT_DIR}/algorithms/CRF/*/)
 
 include_directories(
     ${crf_subfolders}
