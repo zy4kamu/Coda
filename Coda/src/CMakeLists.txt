@@ -9,11 +9,6 @@
 #          Mikhail Kudinov <m.kudinov@samsung.com>, 
 #          Stepan Muzychka <s.muzychka@samsung.com>  
 
-# src
-
-# storage libraries
-set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
-
 add_subdirectory(algorithms/CRF CRF)
 add_subdirectory(algorithms/LogisticRegression LogisticRegression)
 add_subdirectory(algorithms/Optimization Optimization)
