@@ -18,4 +18,9 @@ file(GLOB tokenizer_subfolders
     ${PROJECT_ROOT_DIR}/nlp-stack/Tokenizer/*/
     ${PROJECT_ROOT_DIR}/nlp-stack/Tokenizer/*/*/)
 
+file(GLOB sentence_splitter_subfolders
+    ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/*/
+    ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/*/*/)
+
+
 ADD_DEFINITIONS("-Wall" "-fPIC")
