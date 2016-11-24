@@ -13,8 +13,14 @@ include (../../common_includes.cmake)
 
 set(project_name file-manager)
 
+include_directories(
+    ${PROJECT_ROOT_DIR}/utils/Tools
+    ${PROJECT_ROOT_DIR}/utils/Tools/Strings
+)
+
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-set_target_properties(${TARGET_NAME} PROPERTIES LINKER_LANGUAGE C)
+set_target_properties(${project_name} PROPERTIES LINKER_LANGUAGE C)
+target_link_libraries(${project_name} tools)
 
 add_executable(${project_name}-app main.cpp)
 target_link_libraries(${project_name}-app ${project_name})
