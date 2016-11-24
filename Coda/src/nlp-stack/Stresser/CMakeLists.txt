@@ -3,28 +3,13 @@
 # Copyright (c) 2014 Samsung Electronics Co., Ltd. All rights reserved.
 #
 # Authors: Andrey Moiseenko <moiseenko.a@samsung.com>,
-#          Alexander Romanenko <Alexander Romanenko>, 
-#          Irina Piontkovskaya <p.irina@samsung.com>, 
+#          Alexander Romanenko <Alexander Romanenko>,
+#          Irina Piontkovskaya <p.irina@samsung.com>,
 #          Manh Ha Le <mh.le@samsung.com>,
-#          Mikhail Kudinov <m.kudinov@samsung.com>, 
-#          Stepan Muzychka <s.muzychka@samsung.com>  
+#          Mikhail Kudinov <m.kudinov@samsung.com>,
+#          Stepan Muzychka <s.muzychka@samsung.com>
 
-# src/retrieval-app
-# retrieval-app demo application
-
-set(TARGET_NAME stresser)
-set(stresser_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
-
-set(stresser_SOURCES
-    ${stresser_SOURCE_DIR}/Core/StresserCreator.cpp
-    ${stresser_SOURCE_DIR}/Rus/StresserRus.cpp
-)
-
-set(stresser_HEADERS
-    ${stresser_SOURCE_DIR}/Core/IStresser.h
-    ${stresser_SOURCE_DIR}/Core/StresserCreator.h
-    ${stresser_SOURCE_DIR}/Rus/StresserRus.h
-)
+include (../../common_includes.cmake)
 
 include_directories(
     ${PROJECT_ROOT_DIR}/algorithms/CRF
@@ -40,10 +25,8 @@ include_directories(
     ${PROJECT_ROOT_DIR}/utils/FileManager
 )
 
+add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
+target_link_libraries(${project_name} tools csvManager tokenizer crf dictionary disambiguator)
 
-add_library(${TARGET_NAME} ${LIBRARY_TYPE} ${stresser_SOURCES} ${stresser_HEADERS})
-set_target_properties(${TARGET_NAME} PROPERTIES DEFINE_SYMBOL stresser_EXPORTS)
-add_executable(${TARGET_NAME}-app ${stresser_SOURCE_DIR}/main.cpp)
-target_link_libraries(${TARGET_NAME} tools csvManager tokenizer crf dictionary disambiguator)
-target_link_libraries(${TARGET_NAME}-app ${TARGET_NAME})
-ADD_DEFINITIONS("-Wall" "-fPIC")
+add_executable(${project_name}-app main.cpp)
+target_link_libraries(${project_name}-app ${project_name})
