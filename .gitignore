@@ -1,4 +1,5 @@
 Coda-release-build/
 Coda-debug-build/
 Coda/config/SyntaxParser/tree.dot
+*CMakeLists.txt.user
 
