@@ -50,12 +50,12 @@ using std::shared_ptr;
 namespace SyntaxParser
 {
 
-#define EDGE_FEATURE_CALCULATOR_TEMPLATE template < \
+#define EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS template < \
     bool areFeaturesDiscrete \
     , class NodeFCalculator \
     , bool USE_UNPRESENTED_EDGES>
 
-#define EDGE_FEATURE_CALCULATOR_TEMPLATE1 EdgeFeatureCalculatorRus< \
+#define EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1 EdgeFeatureCalculatorRus< \
     areFeaturesDiscrete, NodeFCalculator, USE_UNPRESENTED_EDGES>
 
 /**
@@ -121,8 +121,8 @@ private:
     int Ceil(int z);
 };
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-EDGE_FEATURE_CALCULATOR_TEMPLATE1::EdgeFeatureCalculatorRus()
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::EdgeFeatureCalculatorRus()
 {
     if (USE_UNPRESENTED_EDGES)
     {
@@ -132,8 +132,8 @@ EDGE_FEATURE_CALCULATOR_TEMPLATE1::EdgeFeatureCalculatorRus()
     }
 }
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-int EDGE_FEATURE_CALCULATOR_TEMPLATE1::Ceil(int z)
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+int EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::Ceil(int z)
 {
     if (std::abs(z) < 5) return z;
     if (std::abs(z) < 10) return z > 0 ? 5 : -5;
@@ -154,8 +154,8 @@ wstring MyCeil(Int distance)
     }
 }
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-void EDGE_FEATURE_CALCULATOR_TEMPLATE1::getTokensAndPunctuation(
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+void EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::getTokensAndPunctuation(
     const SyntaxTree& tree, vector<wstring>* tokens, vector<wstring>* punctuation)
 {
     const vector<SyntaxNode>& nodes = tree.GetNodes();
@@ -176,8 +176,8 @@ void EDGE_FEATURE_CALCULATOR_TEMPLATE1::getTokensAndPunctuation(
     }
 }
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-vector<wstring> EDGE_FEATURE_CALCULATOR_TEMPLATE1::getFullTags(
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+vector<wstring> EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::getFullTags(
     const SyntaxTree& tree)
 {
     const vector<SyntaxNode>& nodes = tree.GetNodes();
@@ -193,8 +193,8 @@ vector<wstring> EDGE_FEATURE_CALCULATOR_TEMPLATE1::getFullTags(
     return fullTags;
 }
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-wstring EDGE_FEATURE_CALCULATOR_TEMPLATE1::getDistanceSchema(
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+wstring EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::getDistanceSchema(
         int leftIndex, int rightIndex
         , const vector<wstring>& tokens
         , const vector<wstring>& fullTags
@@ -220,8 +220,8 @@ wstring EDGE_FEATURE_CALCULATOR_TEMPLATE1::getDistanceSchema(
     return schema;
 }
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-wstring EDGE_FEATURE_CALCULATOR_TEMPLATE1::getPartialSchema(
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+wstring EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::getPartialSchema(
         int leftIndex, int rightIndex
         , const vector<SyntaxNode>& syntaxNodes
         , const vector<wstring>& punctuation)
@@ -246,8 +246,8 @@ wstring EDGE_FEATURE_CALCULATOR_TEMPLATE1::getPartialSchema(
     return schema;
 }
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-bool EDGE_FEATURE_CALCULATOR_TEMPLATE1::setUnbelivableTransitions(
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+bool EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::setUnbelivableTransitions(
     int leftIndex, int rightIndex
     , const vector<SyntaxNode>& syntaxNodes
     , vector<vector<StringBatch> >* features)
@@ -282,8 +282,8 @@ bool EDGE_FEATURE_CALCULATOR_TEMPLATE1::setUnbelivableTransitions(
     return false;
 }
 
-EDGE_FEATURE_CALCULATOR_TEMPLATE
-void EDGE_FEATURE_CALCULATOR_TEMPLATE1::CalculateFeatures(
+EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS
+void EDGE_FEATURE_CALCULATOR_TEMPLATE_RUS1::CalculateFeatures(
     const SyntaxTree& tree, vector<vector<StringBatch> >* features)
 {
     int size = tree.GetSize();

@@ -1,5 +1,5 @@
 #include "SyntaxCreator.h"
-#include "LanguageNotRegisteredException.h"
+#include "SyntaxParser/Core/Exceptions/LanguageNotRegisteredException.h"
 #include "SyntaxSettingsEn.h"
 #include "SyntaxSettingsRus.h"
 

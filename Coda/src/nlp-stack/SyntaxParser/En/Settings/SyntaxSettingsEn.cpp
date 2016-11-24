@@ -1,5 +1,5 @@
 #include "SyntaxSettingsEn.h"
-#include "En/Settings/DisambiguatorSettingsEn.h"
+#include "Disambiguator/En/Settings/DisambiguatorSettingsEn.h"
 
 namespace SyntaxParser
 {

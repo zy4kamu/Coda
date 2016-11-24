@@ -43,17 +43,17 @@
 namespace SyntaxParser
 {
 
-#define ROOT_FEATURE_CALCULATOR_TEMPLATE template < \
+#define ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS template < \
     bool areFeaturesDiscrete>
 
-#define ROOT_FEATURE_CALCULATOR_TEMPLATE1 RootFeatureCalculatorRus< \
+#define ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS1 RootFeatureCalculatorRus< \
     areFeaturesDiscrete>
 
 /** 
  * @class	RootFeatureCalculatorRus
  * @brief	Calculates root features one separate nodes in syntax tree
  */
-ROOT_FEATURE_CALCULATOR_TEMPLATE
+ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS
 class RootFeatureCalculatorRus
 {
 public:
@@ -88,9 +88,9 @@ public:
     vector<StringBatch> Calculate(const SyntaxTree& tree);
 };
 
-ROOT_FEATURE_CALCULATOR_TEMPLATE
-typename ROOT_FEATURE_CALCULATOR_TEMPLATE1::StringBatch
-ROOT_FEATURE_CALCULATOR_TEMPLATE1::Calculate(
+ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS
+typename ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS1::StringBatch
+ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS1::Calculate(
     const SyntaxNode& node, const SyntaxTree& tree)
 {
     vector<wstring> features = node.splittedLabel;
@@ -107,9 +107,9 @@ ROOT_FEATURE_CALCULATOR_TEMPLATE1::Calculate(
     return StringBatch(std::move(features));
 }
 
-ROOT_FEATURE_CALCULATOR_TEMPLATE
-vector<typename ROOT_FEATURE_CALCULATOR_TEMPLATE1::StringBatch>
-ROOT_FEATURE_CALCULATOR_TEMPLATE1::Calculate(
+ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS
+vector<typename ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS1::StringBatch>
+ROOT_FEATURE_CALCULATOR_TEMPLATE_RUS1::Calculate(
     const SyntaxTree& tree)
 {
     const vector<SyntaxNode>& nodes = tree.GetNodes();

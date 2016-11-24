@@ -22,5 +22,10 @@ file(GLOB sentence_splitter_subfolders
     ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/*/
     ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/*/*/)
 
+file(GLOB syntax_parser_subfolders
+    ${PROJECT_ROOT_DIR}/nlp-stack/SyntaxParser/*/
+    ${PROJECT_ROOT_DIR}/nlp-stack/SyntaxParser/*/*/
+    ${PROJECT_ROOT_DIR}/nlp-stack/SyntaxParser/*/*/*/)
+
 
 ADD_DEFINITIONS("-Wall" "-fPIC")
