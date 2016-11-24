@@ -1096,7 +1096,7 @@ void fixRussianMorphology()
     dic->getDictionaryTools()->initCharMap();
     // write new binary file
     trie->buildBuffer();
-    trie->writeToBinaryFile("//home//mhle//Cadenza//config//Dictionary//Data//RussianMorphology.bin");
+    trie->writeToBinaryFile("//home//mhle//Coda//config//Dictionary//Data//RussianMorphology.bin");
 
     delete trie;
     delete dic;
@@ -1107,7 +1107,7 @@ void exportDictionaryToTextFile()
     wcout << "#exportDictionaryToTextFile" << endl;
     dic = new Dictionary();
     wcout << "Load dictionary ok" << endl;
-    dic->getDictionaryTrie()->exportDictionaryToTextFile("//home//mhle//Cadenza//config//Dictionary//Data//RussianMorphology.txt");
+    dic->getDictionaryTrie()->exportDictionaryToTextFile("//home//mhle//Coda//config//Dictionary//Data//RussianMorphology.txt");
     wcout << "export to text file ok" << endl;
     delete dic;
 }
@@ -1370,11 +1370,11 @@ void test(void)
 
 //    createMorphologyBinaryFileFromTextFile(
 //     "//home//mhle//Samsung//EnglishMorphology_2015_03_04//PennTreeBank//lemma_corpus_6.txt",
-//     "//home//mhle//Cadenza//config//Dictionary//Data//EnglishMorphologyVer2.bin");
+//     "//home//mhle//Coda//config//Dictionary//Data//EnglishMorphologyVer2.bin");
 
 //    createMorphologyBinaryFileFromTextFile(
 //     "//home//mhle//Samsung//RussianMorphology_2015_06_09//dict.opcorpora_6.txt",
-//     "//home//mhle//Cadenza//config//Dictionary//Data//RussianMorphologyVer2.bin");
+//     "//home//mhle//Coda//config//Dictionary//Data//RussianMorphologyVer2.bin");
 
 //    testMorphologicalDictionaryRussian();
     testMorphologicalDictionaryEnglish();

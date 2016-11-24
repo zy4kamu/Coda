@@ -1,4 +1,4 @@
-# Object Cadenza
+# Object Coda
 #
 # Copyright (c) 2014 Samsung Electronics Co., Ltd. All rights reserved.
 #
