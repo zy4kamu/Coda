@@ -38,11 +38,11 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif()
 
 # Define linkage type.
-# For now shared linkage could be enabled via "cmake -DLINK_SHARED=true ..." command
+# For now static linkage could be enabled via "cmake -DLINK_SHARED=true ..." command
 if (LINK_SHARED)
-    set(LIBRARY_TYPE SHARED)
-else()
     set(LIBRARY_TYPE STATIC)
+else()
+    set(LIBRARY_TYPE SHARED)
 endif()
 
 if (${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR})

@@ -19,7 +19,6 @@ include_directories(
 )
 
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-set_target_properties(${project_name} PROPERTIES LINKER_LANGUAGE C)
 target_link_libraries(${project_name} tools)
 
 add_executable(${project_name}-app main.cpp)
