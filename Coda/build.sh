@@ -3,13 +3,13 @@
 buildPath=""
 buildOption=""
 if [ "$1" = "-d" ]; then
-	buildPath="../Cadenza-debug-build"
+	buildPath="../Coda-debug-build"
 	buildOption="Debug"
 elif [ "$1" = "-r" ]; then
-	buildPath="../Cadenza-release-build"
+	buildPath="../Coda-release-build"
 	buildOption="Release"
 else
-	buildPath="../Cadenza-build"
+	buildPath="../Coda-build"
 	buildOption="Default"
 fi
 
@@ -21,6 +21,6 @@ else
 fi
 
 cd $buildPath
-cmake -DCMAKE_BUILD_TYPE:STRING="$buildOption" -G "Eclipse CDT4 - Unix Makefiles" ../Cadenza
+cmake -DCMAKE_BUILD_TYPE:STRING="$buildOption" -G "Eclipse CDT4 - Unix Makefiles" ../Coda
 make -j
 
