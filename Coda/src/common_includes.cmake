@@ -6,6 +6,11 @@ file(GLOB sources "*.c" "*/*.c" "*/*/*.c" "*.cpp" "*/*.cpp" "*/*/*.cpp")
 file(GLOB headers "*.h" "*/*.h" "*/*/*.h")
 file(GLOB sourceheaders "*.hpp" "*/*.hpp" "*/*/*.hpp")
 
+file(GLOB tools_subfolders
+    ${PROJECT_ROOT_DIR}/nlp-stack/tools/*/
+    ${PROJECT_ROOT_DIR}/nlp-stack/tools/*/*/
+    ${PROJECT_ROOT_DIR}/nlp-stack/tools/*/*/*/)
+
 file(GLOB crf_subfolders
     ${PROJECT_ROOT_DIR}/algorithms/CRF/*/
     ${PROJECT_ROOT_DIR}/algorithms/CRF/*/*/)

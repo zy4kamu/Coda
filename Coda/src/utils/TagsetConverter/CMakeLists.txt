@@ -13,6 +13,11 @@ include (../../common_includes.cmake)
 
 set(project_name tagset-converter)
 
+include_directories(
+    ${PROJECT_ROOT_DIR}/utils/FileManager
+    ${PROJECT_ROOT_DIR}/utils/Tools
+ )
+
 if (MSVC)
     add_definitions(-DCONFIG_PATH="${PROJECT_ROOT_DIR}/utils/TagsetConverter/Config_Windows/")
 elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
