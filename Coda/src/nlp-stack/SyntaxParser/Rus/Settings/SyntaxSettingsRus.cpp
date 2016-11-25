@@ -1,5 +1,5 @@
 #include "SyntaxSettingsRus.h"
-#include "Rus/Settings/DisambiguatorSettingsRus.h"
+#include "Disambiguator/Rus/Settings/DisambiguatorSettingsRus.h"
 
 namespace SyntaxParser
 {

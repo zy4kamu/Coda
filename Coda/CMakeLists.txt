@@ -1,4 +1,4 @@
-# Object Cadenza
+# Object Coda
 #
 # Copyright (c) 2014 Samsung Electronics Co., Ltd. All rights reserved.
 #
@@ -14,7 +14,7 @@
 cmake_minimum_required (VERSION 2.8)
 
 # Project declaration should be the first statement, before that some variables are undefined
-project(Cadenza)
+project(Coda)
 
 # Define target platform - system and bitness.
 # For now, use such hack for determinint Android cross-compilation. This method is cpecific
@@ -57,7 +57,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
 set(CONFIG_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/config)
-#set(CONFIG_ROOT_DIR config) # for Smaug (CadenzaWebdemo)
+#set(CONFIG_ROOT_DIR config) # for Smaug (CodaWebdemo)
 #set(CONFIG_ROOT_DIR ../Dictionaries/config) # for Smaug (Text Classification / Cross Validation)
 
 if (MSVC)

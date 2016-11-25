@@ -1,4 +1,4 @@
-# Object Cadenza
+# Object Coda
 #
 # Copyright (c) 2014 Samsung Electronics Co., Ltd. All rights reserved.
 #
@@ -8,11 +8,6 @@
 #          Manh Ha Le <mh.le@samsung.com>,
 #          Mikhail Kudinov <m.kudinov@samsung.com>, 
 #          Stepan Muzychka <s.muzychka@samsung.com>  
-
-# src
-
-# storage libraries
-set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 add_subdirectory(algorithms/CRF CRF)
 add_subdirectory(algorithms/LogisticRegression LogisticRegression)

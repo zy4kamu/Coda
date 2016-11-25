@@ -1,4 +1,4 @@
-#include "Controller.h"
+#include "Core/Controller/Controller.h"
 #include "DisambiguatorSettingsEn.h"
 #include "DisambiguatorSettingsEnFast.h"
 #include "DisambiguatorSettingsRus.h"

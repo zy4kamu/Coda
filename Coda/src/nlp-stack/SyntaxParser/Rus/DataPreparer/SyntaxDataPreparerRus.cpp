@@ -1,5 +1,5 @@
 #include "SyntaxDataPreparerRus.h"
-#include "Rus/Settings/DisambiguatorSettingsRus.h"
+#include "Disambiguator/Rus/Settings/DisambiguatorSettingsRus.h"
 
 #include "IDisambiguator.h"
 #include "FileWriter.h"

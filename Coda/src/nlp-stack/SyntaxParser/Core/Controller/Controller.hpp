@@ -158,9 +158,9 @@ template<class _Settings>
 void Controller<_Settings>::Cut()
 {
     SyntaxModel model;
-    model.ReadFromText("/data/Cadenza/config/SyntaxParser/Config_Linux/RU/Model_Output1.txt");
+    model.ReadFromText("/data/Coda/config/SyntaxParser/Config_Linux/RU/Model_Output1.txt");
     model.Cut(0.05);
-    model.WriteToText("/data/Cadenza/config/SyntaxParser/Config_Linux/RU/Model_Output.txt");
+    model.WriteToText("/data/Coda/config/SyntaxParser/Config_Linux/RU/Model_Output.txt");
 }
 
 template<class _Settings>

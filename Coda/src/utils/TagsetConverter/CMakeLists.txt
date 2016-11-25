@@ -1,33 +1,22 @@
-# Object Cadenza
+# Object Coda
 #
 # Copyright (c) 2014 Samsung Electronics Co., Ltd. All rights reserved.
 #
 # Authors: Andrey Moiseenko <moiseenko.a@samsung.com>,
-#          Alexander Romanenko <Alexander Romanenko>, 
-#          Irina Piontkovskaya <p.irina@samsung.com>, 
+#          Alexander Romanenko <Alexander Romanenko>,
+#          Irina Piontkovskaya <p.irina@samsung.com>,
 #          Manh Ha Le <mh.le@samsung.com>,
-#          Mikhail Kudinov <m.kudinov@samsung.com>, 
-#          Stepan Muzychka <s.muzychka@samsung.com>  
+#          Mikhail Kudinov <m.kudinov@samsung.com>,
+#          Stepan Muzychka <s.muzychka@samsung.com>
 
-# src/retrieval-app
-# retrieval-app demo application
+include (../../common_includes.cmake)
 
-set(TARGET_NAME tagsetConverter)
-set(tagsetConverter_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(project_name tagset-converter)
 
-set(tagsetConverter_SOURCES
-    ${tagsetConverter_SOURCE_DIR}/main.cpp
-    ${tagsetConverter_SOURCE_DIR}/OpenCorporaToSynagrusConverter.cpp
-    ${tagsetConverter_SOURCE_DIR}/RusCorporaToSyntagrusConverter.cpp
-    ${tagsetConverter_SOURCE_DIR}/SyntagrusToRusCorporaConverter.cpp
-)
-
-set(tagsetConverter_HEADERS
-    ${tagsetConverter_SOURCE_DIR}/OpenCorporaToSynagrusConverter.h
-    ${tagsetConverter_SOURCE_DIR}/RusCorporaToSyntagrusConverter.h
-    ${tagsetConverter_SOURCE_DIR}/SyntagrusToRusCorporaConverter.h
-    ${tagsetConverter_SOURCE_DIR}/TagsetConverterInterface.h
-)
+include_directories(
+    ${PROJECT_ROOT_DIR}/utils/FileManager
+    ${PROJECT_ROOT_DIR}/utils/Tools
+ )
 
 if (MSVC)
     add_definitions(-DCONFIG_PATH="${PROJECT_ROOT_DIR}/utils/TagsetConverter/Config_Windows/")
@@ -35,15 +24,8 @@ elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-DCONFIG_PATH=\"${PROJECT_ROOT_DIR}/utils/TagsetConverter/Config_Linux/\")
 endif()
 
-include_directories(
-    ${PROJECT_ROOT_DIR}/utils/Tools
-    ${PROJECT_ROOT_DIR}/utils/FileManager
-)
+add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
+target_link_libraries(${project_name} tools file-manager)
 
-
-add_library(${TARGET_NAME} ${LIBRARY_TYPE} ${tagsetConverter_SOURCES} ${tagsetConverter_HEADERS})
-set_target_properties(${TARGET_NAME} PROPERTIES DEFINE_SYMBOL tagsetConverter_EXPORTS)
-add_executable(${TARGET_NAME}-app ${tagsetConverter_SOURCE_DIR}/main.cpp)
-target_link_libraries(${TARGET_NAME} tools csvManager)
-target_link_libraries(${TARGET_NAME}-app ${TARGET_NAME})
-ADD_DEFINITIONS("-Wall" "-fPIC")
+add_executable(${project_name}-app main.cpp)
+target_link_libraries(${project_name}-app ${project_name})

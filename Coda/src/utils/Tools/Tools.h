@@ -69,7 +69,6 @@
 #include "OS/ProcessServer.hpp"
 #include "OS/ProcessInetClient.hpp"
 #include "OS/ProcessInetServer.hpp"
-#include "OS/PythonFloatSizeConnecter.hpp"
 #include "OS/time-calc.h"
 
 #include "Locale/RussianLocale.h"

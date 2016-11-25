@@ -1,28 +1,15 @@
-# Object Cadenza
+# Object Coda
 #
 # Copyright (c) 2014 Samsung Electronics Co., Ltd. All rights reserved.
 #
 # Authors: Andrey Moiseenko <moiseenko.a@samsung.com>,
-#          Alexander Romanenko <Alexander Romanenko>, 
-#          Irina Piontkovskaya <p.irina@samsung.com>, 
+#          Alexander Romanenko <Alexander Romanenko>,
+#          Irina Piontkovskaya <p.irina@samsung.com>,
 #          Manh Ha Le <mh.le@samsung.com>,
-#          Mikhail Kudinov <m.kudinov@samsung.com>, 
-#          Stepan Muzychka <s.muzychka@samsung.com>  
+#          Mikhail Kudinov <m.kudinov@samsung.com>,
+#          Stepan Muzychka <s.muzychka@samsung.com>
 
-# src/retrieval-app
-# retrieval-app demo application
-
-set(TARGET_NAME lemmatizer)
-set(lemmatizer_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
-
-set(lemmatizer_SOURCES
-    ${lemmatizer_SOURCE_DIR}/lemmatizer.cpp
-)
-
-set(lemmatizer_HEADERS
-    ${lemmatizer_SOURCE_DIR}/lemmatizer.h
-    ${lemmatizer_SOURCE_DIR}/lemmatizer-interface.h
-)
+include (../../common_includes.cmake)
 
 include_directories(
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/Clib
@@ -42,8 +29,8 @@ include_directories(
     ${PROJECT_ROOT_DIR}/utils/Tools
 )
 
-add_library(${TARGET_NAME} ${LIBRARY_TYPE} ${lemmatizer_SOURCES} ${lemmatizer_HEADERS})
-add_executable(${TARGET_NAME}-app ${lemmatizer_SOURCE_DIR}/main.cpp)
-target_link_libraries(${TARGET_NAME} tools dictionary tokenizer disambiguator sentence-splitter)
-target_link_libraries(${TARGET_NAME}-app ${TARGET_NAME})
-ADD_DEFINITIONS("-Wall" "-fPIC")
+add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
+target_link_libraries(${project_name} tools dictionary tokenizer disambiguator sentence-splitter)
+
+add_executable(${project_name}-app main.cpp)
+target_link_libraries(${project_name}-app ${project_name})
