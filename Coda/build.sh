@@ -1,26 +1,35 @@
 #!/bin/sh
 
-buildPath=""
-buildOption=""
+# choose build options
+build_path=""
+build_option=""
 if [ "$1" = "-d" ]; then
-	buildPath="../Coda-debug-build"
-	buildOption="Debug"
+	build_path="../build-debug"
+	build_option="Debug"
 elif [ "$1" = "-r" ]; then
-	buildPath="../Coda-release-build"
-	buildOption="Release"
+	build_path="../build-release"
+	build_option="Release"
 else
-	buildPath="../Coda-build"
-	buildOption="Default"
+	build_path="../build"
+	build_option="Release"
 fi
 
-if [ -d "$buildPath" ]; then
+# create build path
+if [ -d "$build_path" ]; then
 	echo 'path exists...'
 else
-	echo "path doesn't exist...creating..."
-	mkdir $buildPath
+	echo "path doesn't exist... creating..."
+	mkdir $build_path
 fi
 
-cd $buildPath
-cmake -DCMAKE_BUILD_TYPE:STRING="$buildOption" -G "Eclipse CDT4 - Unix Makefiles" ../Coda
-make -j
+# choose numuber of processors to build
+num_proc=`nproc`
+if [ $num_proc -gt 1 ]; then
+    num_proc=$((`nproc` - 1))
+fi
+
+# build
+cd $build_path
+cmake -DCMAKE_BUILD_TYPE:STRING="$build_option" ../Coda
+make -j $num_proc
 

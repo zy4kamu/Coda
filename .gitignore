@@ -1,4 +1,4 @@
-Coda-*build/
+*build/
 Coda/config/SyntaxParser/tree.dot
 *CMakeLists.txt.user
-
+*.idea
