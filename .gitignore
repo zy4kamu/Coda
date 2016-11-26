@@ -3,3 +3,4 @@ Coda/config/SyntaxParser/tree.dot
 *CMakeLists.txt.user
 *.idea
 Coda/python/lib
+*.pyc

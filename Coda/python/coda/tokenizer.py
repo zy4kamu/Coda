@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import ctypes, os
-import unittest
+import ctypes, os, unittest, time
 
 build_path = '/home/stepan/veles.nlp/Coda/python/lib'
 tokenizer_lib = ctypes.CDLL(os.path.join(build_path, 'libtokenizer.so'))
@@ -9,6 +8,13 @@ class Token(object):
     def __int__(self):
         self.content = u''
         self.punctuation = []
+
+def push_tokens_to_cpp(tokens):
+    tokenizer_lib.ResetParsedTokens()
+    for token in tokens:
+        tokenizer_lib.PushParsedContent(token.content)
+        for punct in token.punctuation:
+            tokenizer_lib.PushParsedPunctuation(punct)
 
 class Tokenizer(object):
     def __init__(self, language):
@@ -52,7 +58,7 @@ class Tokenizer(object):
         punctuation = ctypes.c_wchar_p(func(token_index, punct_index)).value
         return punctuation
 
-class BasicTest(unittest.TestCase):
+class TokenizationTest(unittest.TestCase):
     def test_tokenize(self):
         tokenizer = Tokenizer("RU")
         line = u"hello, привет!!!"
@@ -62,6 +68,21 @@ class BasicTest(unittest.TestCase):
         self.assertEqual(tokens[0].punctuation[0], u',')
         self.assertEqual(tokens[1].content, u'привет')
         self.assertEqual(len(tokens[1].punctuation), 3)
+
+class CppCommuncationTest(unittest.TestCase):
+    def test_push_to_cpp(self):
+        tokenizer = Tokenizer("RU")
+        line = u"hello, привет!!!"
+        tokens = tokenizer.tokenize(line)
+        push_tokens_to_cpp(tokens)
+
+class TimeCreationTest(unittest.TestCase):
+    def test_time_creation(self):
+        tokenizer = Tokenizer("RU")
+        start_time = time.time()
+        tokenizer = Tokenizer("RU")
+        spent_time = time.time() - start_time
+        self.assertLess(spent_time, 1e-3)
 
 if __name__ == '__main__':
     unittest.main()
