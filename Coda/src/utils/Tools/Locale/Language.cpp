@@ -45,4 +45,18 @@ std::string LanguageToLocaleString(Language language)
     }
 }
 
+Language StringToLanguage(const std::string& language)
+{
+    if (language == "RU") {
+        return Language::RU;
+    } else if (language == "EN") {
+        return Language::EN;
+    } else if (language == "EN_FAST") {
+        return Language::EN_FAST;
+    } else {
+        throw LanguageNotFoundException();
+    }
+}
+
+
 }

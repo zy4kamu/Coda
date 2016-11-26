@@ -8,18 +8,37 @@ extern "C"
 namespace Tokenization
 {
 
-void echo()
+vector<Token> currentTokens;
+
+void CreateTokenizer(const char* languagePtr)
 {
-    std::cout << "hello" << std::endl;
+    Tools::Language language = Tools::StringToLanguage(languagePtr);
+    shared_ptr<ITokenizer> tokenizer = ITokenizer::GetTokenizer(language);
 }
 
-void CreateTokenizer()
+size_t Tokenize(const wchar_t* sentencePtr, const char* languagePtr)
 {
-    shared_ptr<ITokenizer> tokenizer = ITokenizer::GetTokenizer(Tools::Language::EN);
-    for (const Token& token : tokenizer->Tokenize(L"Mothter is ")) {
-        std::wcout << token.ToWstring() << std::endl;
-    }
+    Tools::Language language = Tools::StringToLanguage(languagePtr);
+    shared_ptr<ITokenizer> tokenizer = ITokenizer::GetTokenizer(language);
+    currentTokens = tokenizer->Tokenize(sentencePtr);
+    return currentTokens.size();
 }
+
+const wchar_t* RequestContent(size_t index)
+{
+    return currentTokens[index].content.c_str();
+}
+
+size_t RequestPunctuationSize(size_t index)
+{
+    return currentTokens[index].punctuation.size();
+}
+
+const wchar_t* RequestPunctuation(size_t tokenIndex, size_t punctIndex)
+{
+    return currentTokens[tokenIndex].punctuation[punctIndex].c_str();
+}
+
 
 }
 
