@@ -33,3 +33,10 @@ cd $build_path
 cmake -DCMAKE_BUILD_TYPE:STRING="$build_option" ../Coda
 make -j $num_proc
 
+# copy libraries to python folder
+python_lib_folder=../Coda/python/lib
+if [ ! -d $python_lib_folder ]; then
+    echo 'creating '$python_lib_folder' ...'
+    mkdir -p $python_lib_folder
+fi
+ls bin | grep .so | xargs -I {} cp bin/{} $python_lib_folder
