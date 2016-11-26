@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import ctypes, os
+import unittest
 
 build_path = '/home/stepan/veles.nlp/Coda/python/lib'
-
 tokenizer_lib = ctypes.CDLL(os.path.join(build_path, 'libtokenizer.so'))
 
 class Token(object):
@@ -52,12 +52,18 @@ class Tokenizer(object):
         punctuation = ctypes.c_wchar_p(func(token_index, punct_index)).value
         return punctuation
 
+class BasicTest(unittest.TestCase):
+    def test_tokenize(self):
+        tokenizer = Tokenizer("RU")
+        line = u"hello, привет!!!"
+        tokens = tokenizer.tokenize(line)
+        self.assertEqual(tokens[0].content, u'hello')
+        self.assertEqual(len(tokens[0].punctuation), 1)
+        self.assertEqual(tokens[0].punctuation[0], u',')
+        self.assertEqual(tokens[1].content, u'привет')
+        self.assertEqual(len(tokens[1].punctuation), 3)
 
 if __name__ == '__main__':
-    tokenizer = Tokenizer("RU")
-    line = u"hello, привет!!!"
-    tokens = tokenizer.tokenize(line)
-    for token in tokens:
-        print token.content
-        print token.punctuation
+    unittest.main()
+
 
