@@ -4,3 +4,6 @@ Coda/config/SyntaxParser/tree.dot
 *.idea
 Coda/python/lib
 *.pyc
+Coda/python/coda.egg-info/
+Coda/python/dist/
+
