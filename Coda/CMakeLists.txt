@@ -32,10 +32,22 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -std=c++11") #TODO:  -Wco
 add_definitions(-D__STDC_LIMIT_MACROS)
 
 # set folder names
+if (NOT CONFIG_ROOT_DIR)
+    set(CONFIG_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/config)
+endif()
+message("all configs are located in folder " ${CONFIG_ROOT_DIR})
+
+if (NOT EXECUTABLE_OUTPUT_PATH)
+    set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+endif()
+message("binary ouptut folder: " ${EXECUTABLE_OUTPUT_PATH})
+
+if (NOT LIBRARY_OUTPUT_PATH)
+    set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+endif()
+message("library output folder: " ${LIBRARY_OUTPUT_PATH})
+
 set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
-set(CONFIG_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/config)
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(MAIN_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 # set build type

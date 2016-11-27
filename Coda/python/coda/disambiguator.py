@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import ctypes, os, unittest, time
-import tokenizer
+import tokenizer, common
 
-build_path = '/home/stepan/veles.nlp/Coda/python/lib'
-disambiguator_lib = ctypes.CDLL(os.path.join(build_path, 'libdisambiguator.so'))
+disambiguator_lib = common.load_library('disambiguator')
 
 class DisambigatedData(tokenizer.Token):
     def __int__(self):

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import ctypes, os, unittest, time
+import common
 
-build_path = '/home/stepan/veles.nlp/Coda/python/lib'
-tokenizer_lib = ctypes.CDLL(os.path.join(build_path, 'libtokenizer.so'))
+tokenizer_lib = common.load_library('tokenizer')
 
 class Token(object):
     def __int__(self):
