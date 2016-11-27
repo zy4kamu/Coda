@@ -24,8 +24,8 @@ include_directories(
     ${PROJECT_ROOT_DIR}/utils/TagsetConverter
     ${PROJECT_ROOT_DIR}/utils/Tools
 
+    ${PROJECT_ROOT_DIR}/nlp-stack/
     ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary
-
     ${PROJECT_ROOT_DIR}/nlp-stack/Tokenizer/Core
 )
 

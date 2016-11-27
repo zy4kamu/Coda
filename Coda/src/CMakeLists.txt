@@ -9,28 +9,28 @@
 #          Mikhail Kudinov <m.kudinov@samsung.com>, 
 #          Stepan Muzychka <s.muzychka@samsung.com>  
 
-add_subdirectory(algorithms/CRF CRF)
-add_subdirectory(algorithms/LogisticRegression LogisticRegression)
-add_subdirectory(algorithms/Optimization Optimization)
-add_subdirectory(algorithms/SVM SVM)
+add_subdirectory(algorithms/CRF)
+add_subdirectory(algorithms/LogisticRegression)
+add_subdirectory(algorithms/Optimization)
+add_subdirectory(algorithms/SVM)
 
-add_subdirectory(nlp-stack/Chunking Chunking)
-add_subdirectory(nlp-stack/Dictionary Dictionary)
-add_subdirectory(nlp-stack/Disambiguator Disambiguator)
-add_subdirectory(nlp-stack/Lemmatizer Lemmatizer)
-add_subdirectory(nlp-stack/PorterStemmer PorterStemmer)
-add_subdirectory(nlp-stack/SentenceSplitter SentenceSplitter)
-add_subdirectory(nlp-stack/Stresser Stresser)
-add_subdirectory(nlp-stack/SyntaxParser SyntaxParser)
-add_subdirectory(nlp-stack/Tokenizer Tokenizer)
+add_subdirectory(nlp-stack/Chunking)
+add_subdirectory(nlp-stack/Dictionary)
+add_subdirectory(nlp-stack/Disambiguator)
+add_subdirectory(nlp-stack/Lemmatizer)
+add_subdirectory(nlp-stack/PorterStemmer)
+add_subdirectory(nlp-stack/SentenceSplitter)
+add_subdirectory(nlp-stack/Stresser)
+add_subdirectory(nlp-stack/SyntaxParser)
+add_subdirectory(nlp-stack/Tokenizer)
 
-add_subdirectory(utils/FileManager FileManager)
-add_subdirectory(utils/Eigen Eigen)
-add_subdirectory(utils/RegexpTools RegexpTools)
-add_subdirectory(utils/StatCalc StatCalc)
-add_subdirectory(utils/TagsetConstants TagsetConstants)
-add_subdirectory(utils/TagsetConverter TagsetConverter)
-add_subdirectory(utils/Tools Tools)
+add_subdirectory(utils/FileManager)
+add_subdirectory(utils/Eigen)
+add_subdirectory(utils/RegexpTools)
+add_subdirectory(utils/StatCalc)
+add_subdirectory(utils/TagsetConstants)
+add_subdirectory(utils/TagsetConverter)
+add_subdirectory(utils/Tools)
 
 
 

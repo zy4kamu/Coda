@@ -47,6 +47,7 @@ enum Language
 
 std::string LanguageToString(Language language);
 std::string LanguageToLocaleString(Language language);
+Language StringToLanguage(const std::string& language);
 
 }
 

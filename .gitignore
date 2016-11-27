@@ -1,4 +1,9 @@
-Coda-*build/
+*build/
 Coda/config/SyntaxParser/tree.dot
 *CMakeLists.txt.user
+*.idea
+Coda/python/lib
+*.pyc
+Coda/python/coda.egg-info/
+Coda/python/dist/
 
