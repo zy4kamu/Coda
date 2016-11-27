@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from tokenizer import Tokenizer
-from disambiguator import Disambiguator
+from coda.tokenizer import Tokenizer
+from coda.disambiguator import Disambiguator
 
 if __name__ == '__main__':
     tokenizer = Tokenizer("RU")
