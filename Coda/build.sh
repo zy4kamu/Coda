@@ -46,24 +46,14 @@ bin_folder=$output_folder'bin/'
 lib_folder=$output_folder'lib/'
 cmake -DCMAKE_BUILD_TYPE:STRING="$build_option" \
       -DCONFIG_ROOT_DIR:STRING="$config_folder" \
-      -DEXECUTABLE_OUTPUT_PATH:STRING="$bin_folder" \
-      -DLIBRARY_OUTPUT_PATH:STRING="$lib_folder" \
+      -DCMAKE_RUNTIME_OUTPUT_DIRECTORY:STRING="$bin_folder" \
+      -DCMAKE_LIBRARY_OUTPUT_DIRECTORY:STRING="$lib_folder" \
       ../Coda
 else
 cmake -DCMAKE_BUILD_TYPE:STRING="$build_option" \
       ../Coda
 fi
 make -j $num_proc
-
-# copy libraries to output folder
-if [ $build_option = "Release" ]; then
-    output_lib_folder=$output_folder'lib/'
-    if [ ! -d $output_lib_folder ]; then
-        echo 'creating '$output_lib_folder' ...'
-        mkdir -p $output_lib_folder
-    fi
-    ls bin | grep .so | xargs -I {} cp bin/{} $output_lib_folder
-fi
 
 # copy configs to output folder
 cd -

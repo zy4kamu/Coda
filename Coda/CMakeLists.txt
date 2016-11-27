@@ -35,17 +35,17 @@ add_definitions(-D__STDC_LIMIT_MACROS)
 if (NOT CONFIG_ROOT_DIR)
     set(CONFIG_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/config)
 endif()
-message("all configs are located in folder " ${CONFIG_ROOT_DIR})
+message("config output folder: " ${CONFIG_ROOT_DIR})
 
-if (NOT EXECUTABLE_OUTPUT_PATH)
-    set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+if (NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 endif()
-message("binary ouptut folder: " ${EXECUTABLE_OUTPUT_PATH})
+message("binary ouptut folder: " ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-if (NOT LIBRARY_OUTPUT_PATH)
-    set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+if (NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 endif()
-message("library output folder: " ${LIBRARY_OUTPUT_PATH})
+message("library output folder: " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 set(MAIN_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR})
@@ -133,7 +133,7 @@ add_definitions(-DTEXT_SUMMARIZATION_ENG_DATA=\"${SMAUG_PATH}TextSummarization-e
 #TOOLS
 add_definitions(-DTOOLS_OS_SCRIPT_FOLDER=\"${PROJECT_ROOT_DIR}/utils/Tools/OS/Scripts/\")
 
-add_subdirectory(src bin)
-add_subdirectory(test test)
+add_subdirectory(src)
+add_subdirectory(test)
 
 
