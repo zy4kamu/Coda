@@ -1,5 +1,6 @@
 # REQUIREMENTS
 
+
 1. Ubuntu 14.04 or higher
 2. cmake version >= 2.8
 3. gcc version >= 4.8
@@ -12,7 +13,7 @@
     (This script will install python wrapper .egg over c++ to corresponding site_packages folder)
 
 # USAGE EXAMPLE
-cd python
-python usage_example.py
+1. cd python
+2. python usage_example.py
     (Run a small demo application with morphology disambiguator)
 
