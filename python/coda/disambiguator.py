@@ -5,7 +5,7 @@ import tokenizer, common
 disambiguator_lib = common.load_library('disambiguator')
 
 class DisambigatedData(tokenizer.Token):
-    def __int__(self):
+    def __init__(self):
         self.lemma = u''
         self.label = u''
         self.weight = 0
