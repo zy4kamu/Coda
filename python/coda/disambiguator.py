@@ -20,8 +20,21 @@ class Disambiguator(object):
         disambiguator_lib.CreateDisambiguator(language)
         self.language = language
 
-    def disambiguate(self, tokens):
+    def disambiguate(self, tokens, num_hypothesis=None, coverage_percent=None):
         tokenizer.push_tokens_to_cpp(tokens)
+        if num_hypothesis is None:
+            if coverage_percent is None:
+                self.__disambiguate(tokens)
+            else:
+                # TODO:
+                pass
+        elif coverage_percent is None:
+            #TODO:
+            pass
+        else:
+            raise ValueError("num_hypothesis and cover")
+        
+    def __disambiguate(self, tokens):
         disambiguator_lib.Disambiguate(self.language)
         disambiguated = []
         for token_index in range(len(tokens)):
