@@ -31,7 +31,7 @@ void DisambiguateHypothesis(const char* languagePtr, size_t numberOfHypothesis)
 {
     Tools::Language language = Tools::StringToLanguage(languagePtr);
     shared_ptr<IDisambiguator> disambiguator = IDisambiguator::GetDisambiguator(language);
-    currentHypothesisDistribution.clear();
+    currentHypothesisDistribution.resize(Tokenization::parsedTokens.size());
     currentDisambiguated = disambiguator->Disambiguate(
         Tokenization::parsedTokens, numberOfHypothesis, &currentHypothesisDistribution);
 }
@@ -40,7 +40,7 @@ void DisambiguateCoverage(const char* languagePtr, double coverage, size_t maxNu
 {
     Tools::Language language = Tools::StringToLanguage(languagePtr);
     shared_ptr<IDisambiguator> disambiguator = IDisambiguator::GetDisambiguator(language);
-    currentHypothesisDistribution.clear();
+    currentHypothesisDistribution.resize(Tokenization::parsedTokens.size());
     currentDisambiguated = disambiguator->Disambiguate(
         Tokenization::parsedTokens, coverage
         , maxNumberOfPaths, &currentHypothesisDistribution);
