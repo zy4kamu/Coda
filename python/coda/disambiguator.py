@@ -122,8 +122,11 @@ class DisambiguationTest(unittest.TestCase):
 
     def test_several_hypothesis(self):
         print '----------------------------------------------------------------------'
+        sentence = u"сорока жила на горе"
+        print "Input sentence: ", sentence
+        print ''
         tokenizator = tokenizer.Tokenizer("RU")
-        tokens = tokenizator.tokenize(u"сорока жила на горе")
+        tokens = tokenizator.tokenize(sentence)
         disambiguator = Disambiguator("RU")
         disambiguated = disambiguator.disambiguate(tokens, num_hypothesis=3)
         for (hypothesis, probability) in disambiguated:
