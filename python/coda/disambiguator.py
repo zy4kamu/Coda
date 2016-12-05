@@ -20,55 +20,86 @@ class Disambiguator(object):
         disambiguator_lib.CreateDisambiguator(language)
         self.language = language
 
-    def disambiguate(self, tokens, num_hypothesis=None, coverage_percent=None):
+    def disambiguate(self, tokens, num_hypothesis=None, 
+        coverage_percent=None, max_number_of_hypothesis=1024):
+        '''
+        '''
         tokenizer.push_tokens_to_cpp(tokens)
         if num_hypothesis is None:
             if coverage_percent is None:
-                self.__disambiguate(tokens)
+                disambiguator_lib.Disambiguate(
+                    self.language)
+                return self.__request_result_from_cpp(tokens)[0][0]
             else:
-                # TODO:
-                pass
+                disambiguator_lib.DisambiguateHypothesis(
+                    self.language, 
+                    ctypes.c_size_t(num_hypothesis)) 
         elif coverage_percent is None:
-            #TODO:
-            pass
+            disambiguator_lib.DisambiguateCoverage(
+                self.language,
+                ctypes.c_double(coverage_percent),
+                ctypes.c_size_t(max_number_of_hypothesis))
         else:
             raise ValueError("num_hypothesis and cover")
-        
-    def __disambiguate(self, tokens):
-        disambiguator_lib.Disambiguate(self.language)
-        disambiguated = []
-        for token_index in range(len(tokens)):
-            item = DisambigatedData()
-            item.get_info_from_token(tokens[token_index])
-            item.lemma = self.__request_lemma_from_cpp(token_index)
-            item.label = self.__request_label_from_cpp(token_index)
-            item.weight = self.__request_weight_from_cpp(token_index)
-            item.lemma_id = self.__request_lemma_id_from_cpp(token_index)
-            disambiguated.append(item)
-        return disambiguated
+        return self.__request_result_from_cpp(tokens)
 
-    def __request_lemma_from_cpp(self, token_index):
+    def __request_result_from_cpp(self, tokens):
+        number_of_hypothesis = self.__request_number_of_hypothesis()
+        hypothesis = []
+        for hyp_index in range(number_of_hypothesis):
+            disambiguated = []
+            for token_index in range(len(tokens)):
+                item = DisambigatedData()
+                item.get_info_from_token(tokens[token_index])
+                item.lemma = self.__request_lemma_from_cpp(hyp_index, token_index)
+                item.label = self.__request_label_from_cpp(hyp_index, token_index)
+                item.weight = self.__request_weight_from_cpp(hyp_index, token_index)
+                item.lemma_id = self.__request_lemma_id_from_cpp(hyp_index, token_index)
+                disambiguated.append(item)
+            probability = self.__request_hypothesis_probability(hyp_index)
+            hypothesis.append((disambiguated, probability))
+        return hypothesis
+
+    def __request_number_of_hypothesis(self):
+        func = disambiguator_lib.RequestNumberOfHypothesis
+        func.res_type = ctypes.c_size_t
+        content = ctypes.c_size_t(
+            func()).value
+        return content
+
+    def __request_hypothesis_probability(self, hypothesis_index):
+        func = disambiguator_lib.RequestHypothesisProbability
+        func.res_type = ctypes.c_double
+        content = ctypes.c_double(
+            func(hypothesis_index)).value
+        return content
+
+    def __request_lemma_from_cpp(self, hypothesis_index, token_index):
         func = disambiguator_lib.RequestLemma
         func.res_type = ctypes.c_wchar_p
-        content = ctypes.c_wchar_p(func(token_index)).value
+        content = ctypes.c_wchar_p(
+            func(hypothesis_index, token_index)).value
         return content
 
-    def __request_label_from_cpp(self, token_index):
+    def __request_label_from_cpp(self, hypothesis_index, token_index):
         func = disambiguator_lib.RequestLabel
         func.res_type = ctypes.c_wchar_p
-        content = ctypes.c_wchar_p(func(token_index)).value
+        content = ctypes.c_wchar_p(
+            func(hypothesis_index, token_index)).value
         return content
 
-    def __request_weight_from_cpp(self, token_index):
+    def __request_weight_from_cpp(self, hypothesis_index, token_index):
         func = disambiguator_lib.RequestLabel
         func.res_type = ctypes.c_double
-        content = ctypes.c_double(func(token_index)).value
+        content = ctypes.c_double(
+            func(hypothesis_index, token_index)).value
         return content
 
-    def __request_lemma_id_from_cpp(self, token_index):
+    def __request_lemma_id_from_cpp(self, hypothesis_index, token_index):
         func = disambiguator_lib.RequestLemmaId
         func.res_type = ctypes.c_int
-        content = ctypes.c_int(func(token_index)).value
+        content = ctypes.c_int(
+            func(hypothesis_index, token_index)).value
         return content
 
 class TimeCreationTest(unittest.TestCase):
@@ -90,5 +121,4 @@ class DisambiguationTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
 

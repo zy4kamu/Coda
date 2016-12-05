@@ -7,7 +7,8 @@ extern "C"
 namespace Disambiguation
 {
 
-vector<DisambiguatedData> currentDisambiguated;
+vector<double> currentHypothesisDistribution;
+vector<vector<DisambiguatedData> > currentDisambiguated;
 
 void CreateDisambiguator(const char* languagePtr)
 {
@@ -19,30 +20,61 @@ void Disambiguate(const char* languagePtr)
 {
     Tools::Language language = Tools::StringToLanguage(languagePtr);
     shared_ptr<IDisambiguator> disambiguator = IDisambiguator::GetDisambiguator(language);
+    currentHypothesisDistribution.clear();
+    currentDisambiguated.clear();
+    currentHypothesisDistribution.push_back(1);
+    currentDisambiguated.emplace_back(disambiguator->Disambiguate(
+        Tokenization::parsedTokens));
+}
+
+void DisambiguateHypothesis(const char* languagePtr, size_t numberOfHypothesis)
+{
+    Tools::Language language = Tools::StringToLanguage(languagePtr);
+    shared_ptr<IDisambiguator> disambiguator = IDisambiguator::GetDisambiguator(language);
+    currentHypothesisDistribution.clear();
     currentDisambiguated = disambiguator->Disambiguate(
-        Tokenization::parsedTokens);
+        Tokenization::parsedTokens, numberOfHypothesis, &currentHypothesisDistribution);
 }
 
-const wchar_t* RequestLemma(size_t index)
+void DisambiguateCoverage(const char* languagePtr, double coverage, size_t maxNumberOfPaths)
 {
-    return currentDisambiguated[index].lemma.c_str();
+    Tools::Language language = Tools::StringToLanguage(languagePtr);
+    shared_ptr<IDisambiguator> disambiguator = IDisambiguator::GetDisambiguator(language);
+    currentHypothesisDistribution.clear();
+    currentDisambiguated = disambiguator->Disambiguate(
+        Tokenization::parsedTokens, coverage
+        , maxNumberOfPaths, &currentHypothesisDistribution);
 }
 
-const wchar_t* RequestLabel(size_t index)
+size_t RequestNumberOfHypothesis()
 {
-    return currentDisambiguated[index].label.c_str();
+    return currentHypothesisDistribution.size();
 }
 
-double RequestWeight(size_t index)
+double RequestHypothesisProbability(size_t hypothesisIndex)
 {
-    return currentDisambiguated[index].weight;
+    return currentHypothesisDistribution[hypothesisIndex];
 }
 
-int RequestLemmaId(size_t index)
+const wchar_t* RequestLemma(size_t hypothesisIndex, size_t tokenIndex)
 {
-    return currentDisambiguated[index].lemmaId;
+    return currentDisambiguated[hypothesisIndex][tokenIndex].lemma.c_str();
 }
 
+const wchar_t* RequestLabel(size_t hypothesisIndex, size_t tokenIndex)
+{
+    return currentDisambiguated[hypothesisIndex][tokenIndex].label.c_str();
+}
+
+double RequestWeight(size_t hypothesisIndex, size_t tokenIndex)
+{
+    return currentDisambiguated[hypothesisIndex][tokenIndex].weight;
+}
+
+int RequestLemmaId(size_t hypothesisIndex, size_t tokenIndex)
+{
+    return currentDisambiguated[hypothesisIndex][tokenIndex].lemmaId;
+}
 
 }
 
