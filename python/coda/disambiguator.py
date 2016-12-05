@@ -135,6 +135,22 @@ class DisambiguationTest(unittest.TestCase):
                 print index, item.content, item.label, item.lemma
             print ''
 
+    def test_coverage(self):
+        print '----------------------------------------------------------------------'
+        sentence = u"мать видит дочь"
+        print "Input sentence: ", sentence
+        print ''
+        tokenizator = tokenizer.Tokenizer("RU")
+        tokens = tokenizator.tokenize(sentence)
+        disambiguator = Disambiguator("RU")
+        disambiguated = disambiguator.disambiguate(tokens, coverage_percent=0.9)
+        for (hypothesis, probability) in disambiguated:
+            print "With probability {}:".format(probability)
+            for index, item in enumerate(hypothesis):
+                print index, item.content, item.label, item.lemma
+            print ''
+
+
 if __name__ == '__main__':
     unittest.main()
 
