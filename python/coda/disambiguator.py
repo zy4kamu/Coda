@@ -5,6 +5,13 @@ import tokenizer, common
 disambiguator_lib = common.load_library('disambiguator')
 
 class DisambigatedData(tokenizer.Token):
+    '''
+    Extends tokenizer.Token with morphological information:
+        lemma: initial form of the word,
+        label: morphological tag
+        lemma_id: index of lemma in database
+        weight: deprecated
+    '''
     def __init__(self):
         self.lemma = u''
         self.label = u''
@@ -16,6 +23,16 @@ class DisambigatedData(tokenizer.Token):
         self.punctuation = token.punctuation
 
 class Disambiguator(object):
+    '''
+    Morphological disambiguators enables to find morphological 
+    labels and lemmas for given list of tokens (sentence).
+
+    Parameters
+    ----------
+
+    language : str
+        Language used for disambiguation (RU, EN, ...)
+    '''
     def __init__(self, language):
         disambiguator_lib.CreateDisambiguator(language)
         self.language = language
@@ -23,6 +40,37 @@ class Disambiguator(object):
     def disambiguate(self, tokens, num_hypothesis=None, 
         coverage_percent=None, max_number_of_hypothesis=1024):
         '''
+        Morphological analysis for input tokens
+
+
+        Parameters
+        ----------
+        tokens : list of tokenizer.Token
+            The sentence to disambiguate
+        
+        num_hypothesis : int, optional
+            Number of top possible morphological hypothesis
+            (contradicts with `coverage_percent`)
+
+        coverage_percent : float, optional
+            Selects `num_hypothesis` in order to cover 
+            correct morphological tagging with appropriate probability
+            (contradicts with `num_hypothesis`)
+
+        max_number_of_hypothesis : int, optional
+            Used to reduce number of output hypothesis provided 
+            by `coverage_percent` option
+
+        Notes
+        -----
+        Either `num_hypothesis` or `coverage_percent` must be None,
+        otherwise ValueError exception will be thrown
+
+        Returns
+        -------
+        out : list of pairs (disambiguator.DisambiguatedData, probability)
+            where key represents possible morphological tagging
+            and value -- it's probability
         '''
         tokenizer.push_tokens_to_cpp(tokens)
         if num_hypothesis is None:
@@ -101,6 +149,8 @@ class Disambiguator(object):
         content = ctypes.c_int(
             func(hypothesis_index, token_index)).value
         return content
+
+''' Tests '''
 
 class TimeCreationTest(unittest.TestCase):
     def test_time_creation(self):
