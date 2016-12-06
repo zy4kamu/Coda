@@ -4,7 +4,7 @@ import tokenizer, common
 
 disambiguator_lib = common.load_library('disambiguator')
 
-class DisambigatedData(tokenizer.Token):
+class DisambiguatedData(tokenizer.Token):
     '''
     Extends tokenizer.Token with morphological information:
         lemma: initial form of the word,
@@ -97,7 +97,7 @@ class Disambiguator(object):
         for hyp_index in range(number_of_hypothesis):
             disambiguated = []
             for token_index in range(len(tokens)):
-                item = DisambigatedData()
+                item = DisambiguatedData()
                 item.get_info_from_token(tokens[token_index])
                 item.lemma = self.__request_lemma_from_cpp(hyp_index, token_index)
                 item.label = self.__request_label_from_cpp(hyp_index, token_index)
@@ -152,7 +152,7 @@ class Disambiguator(object):
 
 ''' Tests '''
 
-class TimeCreationTest(unittest.TestCase):
+class DisambiguationTest(unittest.TestCase):
     def test_time_creation(self):
         disambiguator = Disambiguator("RU")
         start_time = time.time()
@@ -160,7 +160,6 @@ class TimeCreationTest(unittest.TestCase):
         spent_time = time.time() - start_time
         self.assertLess(spent_time, 1e-3)
 
-class DisambiguationTest(unittest.TestCase):
     def test_disambiguation(self):
         print '----------------------------------------------------------------------'
         tokenizator = tokenizer.Tokenizer("RU")
