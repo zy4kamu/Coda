@@ -24,6 +24,21 @@ void SyntaxParse(const char* languagePtr)
     currentTree = parser->Parse(Disambiguation::parsedDisambiguated);
 }
 
+int GetRootIndex()
+{
+    return currentTree.GetRootIndex();
+}
+
+const wchar_t* GetSentence()
+{
+    return currentTree.GetSentence().c_str();
+}
+
+int GetParentIndex(size_t tokenIndex)
+{
+    return currentTree.GetNodes()[tokenIndex].parentIndex;
+}
+
 }
 
 }

@@ -10,6 +10,9 @@ namespace SyntaxParser
 
 void CreateSyntaxParser(const char* languagePtr);
 void SyntaxParse(const char* languagePtr);
+int GetRootIndex();
+const wchar_t* GetSentence();
+int GetParentIndex(size_t tokenIndex);
 
 }
 

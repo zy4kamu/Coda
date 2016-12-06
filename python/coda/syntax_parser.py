@@ -16,15 +16,19 @@ class SyntaxNode(disambiguator.DisambiguatedData):
         self.weight = disambiguated.weight
         self.lemma_id = disambiguated.lemma_id
 
+    def to_string(self):
+        return u'{} {} {} {} {}'.format(
+            self.index, self.parent_index, 
+            self.content, self.label, self.lemma)
+
 class SyntaxTree(object):
     def __init__(self):
         self.root_index = -1
         self.nodes = []
         self.sentence = u''
 
-    def parse(self, disambiguated):
-        disambiguator.push_disambiguated_to_cpp(disambiugated)
-        syntax_parser_lib.SyntaxParse()
+    def to_string(self):
+        return u'\n'.join([node.to_string() for node in self.nodes])
 
 class SyntaxParser(object):
     def __init__(self, language):
@@ -33,6 +37,36 @@ class SyntaxParser(object):
 
     def parse(self, disambiguated):
         disambiguator.push_disambiguated_to_cpp(disambiguated)
+        syntax_parser_lib.SyntaxParse(self.language)
+        tree = SyntaxTree()
+        tree.nodes = []
+        for index, item in enumerate(disambiguated):
+            syntax_node = SyntaxNode()
+            syntax_node.index = index
+            syntax_node.parent_index = self.__request_parent_index(index)
+            syntax_node.get_info_from_morphology(item)
+            tree.nodes.append(syntax_node)
+        tree.root_index = self.__request_root_index()
+        tree.sentence = self.__request_sentence()
+        return tree
+
+    def __request_parent_index(self, index):
+        func = syntax_parser_lib.GetParentIndex
+        func.restype = ctypes.c_int
+        parent_index = ctypes.c_int(func(index)).value
+        return parent_index
+
+    def __request_root_index(self):
+        func = syntax_parser_lib.GetRootIndex
+        func.restype = ctypes.c_int
+        root_index = ctypes.c_int(func()).value
+        return root_index
+
+    def __request_sentence(self):
+        func = syntax_parser_lib.GetSentence
+        func.restype = ctypes.c_wchar_p
+        sentence = ctypes.c_wchar_p(func()).value
+        return sentence
 
 class SyntaxParserTest(unittest.TestCase):
     def test_time_creation(self):
@@ -52,7 +86,8 @@ class SyntaxParserTest(unittest.TestCase):
         disambiger = disambiguator.Disambiguator("RU")
         disambiguated = disambiger.disambiguate(tokens)
         parser = SyntaxParser("RU")
-        parser.parse(disambiguated)
+        parsed = parser.parse(disambiguated)
+        print parsed.to_string()
 
 
 if __name__ == '__main__':

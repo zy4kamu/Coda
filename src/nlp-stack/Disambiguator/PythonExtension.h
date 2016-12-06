@@ -25,7 +25,7 @@ extern vector<DisambiguatedData> parsedDisambiguated;
 
 void PushParsedDisambiguated(const wchar_t* content
     , const wchar_t* lemma, const wchar_t* label
-    , double weight, int lemma);
+    , double weight, int lemmaId);
 void PushParsedDisambiguatedPunctuation(const wchar_t* punctuation);
 void ResetParsedDisabiguated();
 
