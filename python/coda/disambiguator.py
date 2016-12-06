@@ -22,6 +22,15 @@ class DisambiguatedData(tokenizer.Token):
         self.content = token.content
         self.punctuation = token.punctuation
 
+def push_disambiguated_to_cpp(disambiguated):
+    for item in disambiguated:
+        disambiguator_lib.PushParsedDisambiguated(
+            item.content, item.lemma, item.label,
+            ctypes.c_double(item.weight), 
+            ctypes.c_int(item.lemma_id))
+        for punct in item.punctuation:
+            disambiguator_lib.PushParsedDisambiguated(punct)
+
 class Disambiguator(object):
     '''
     Morphological disambiguators enables to find morphological 
@@ -168,6 +177,7 @@ class DisambiguationTest(unittest.TestCase):
         disambiguated = disambiguator.disambiguate(tokens)
         for index, item in enumerate(disambiguated):
             print index, item.content, item.label, item.lemma
+        push_disambiguated_to_cpp(disambiguated)
 
     def test_several_hypothesis(self):
         print '----------------------------------------------------------------------'

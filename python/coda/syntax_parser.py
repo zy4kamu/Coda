@@ -22,6 +22,10 @@ class SyntaxTree(object):
         self.nodes = []
         self.sentence = u''
 
+    def parse(disambiguated):
+        disambiguator
+        syntax_parser_lib.SyntaxParse()
+
 class SyntaxParser(object):
     def __init__(self, language):
         syntax_parser_lib.CreateSyntaxParser(language)
