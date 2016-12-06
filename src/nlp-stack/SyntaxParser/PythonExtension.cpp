@@ -1,4 +1,5 @@
 #include "SyntaxParser.hpp"
+#include "Drawer.h"
 #include "Disambiguator/PythonExtension.h"
 
 extern "C"
@@ -37,6 +38,12 @@ const wchar_t* GetSentence()
 int GetParentIndex(size_t tokenIndex)
 {
     return currentTree.GetNodes()[tokenIndex].parentIndex;
+}
+
+void Draw(const char* outputFile, bool openPDF)
+{
+    Drawer drawer(outputFile);
+    drawer.Draw(currentTree, openPDF);
 }
 
 }

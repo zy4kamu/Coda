@@ -3,28 +3,36 @@
 namespace SyntaxParser
 {
 
-void Drawer::Draw(const SyntaxTree& real, const SyntaxTree& predicted)
+Drawer::Drawer(const string& outputFile)
+    : outputFile(outputFile.size() > 0 ? outputFile : SYNTAX_OUTPUT_TREE_PATH)
 {
-    draw(getDualDotText(real, predicted));
 }
 
-void Drawer::Draw(const SyntaxTree& tree)
+void Drawer::Draw(const SyntaxTree& real, const SyntaxTree& predicted, bool openPDF)
 {
-    draw(tree.ToDotString());
+    draw(getDualDotText(real, predicted), openPDF);
 }
 
-void Drawer::draw(const wstring& dotGraph)
+void Drawer::Draw(const SyntaxTree& tree, bool openPDF)
 {
-    wofstream out(SYNTAX_OUTPUT_TREE_PATH);
+    draw(tree.ToDotString(), openPDF);
+}
+
+void Drawer::draw(const wstring& dotGraph, bool openPDF)
+{
+    wofstream out(outputFile);
     out << dotGraph;
     out.close();
 
-    string drawTreeScript = SYNTAX_DRAW_TREE_SCRIPT;
-    drawTreeScript += " ";
-    drawTreeScript += GRAPHVIZ_PATH;
-    drawTreeScript += " ";
-    drawTreeScript += SYNTAX_OUTPUT_TREE_PATH;
-    system(drawTreeScript.c_str());
+    if (openPDF)
+    {
+        string drawTreeScript = SYNTAX_DRAW_TREE_SCRIPT;
+        drawTreeScript += " ";
+        drawTreeScript += GRAPHVIZ_PATH;
+        drawTreeScript += " ";
+        drawTreeScript += outputFile;
+        system(drawTreeScript.c_str());
+    }
 }
 
 wstring Drawer::getDualDotText(

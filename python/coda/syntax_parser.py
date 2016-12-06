@@ -30,6 +30,10 @@ class SyntaxTree(object):
     def to_string(self):
         return u'\n'.join([node.to_string() for node in self.nodes])
 
+    def draw(self, dot_file="", show=False):
+        func = syntax_parser_lib.Draw
+        func(dot_file, show)
+
 class SyntaxParser(object):
     def __init__(self, language):
         syntax_parser_lib.CreateSyntaxParser(language)
@@ -88,7 +92,7 @@ class SyntaxParserTest(unittest.TestCase):
         parser = SyntaxParser("RU")
         parsed = parser.parse(disambiguated)
         print parsed.to_string()
-
+        parsed.draw(show=True)
 
 if __name__ == '__main__':
     unittest.main()
