@@ -22,14 +22,17 @@ class SyntaxTree(object):
         self.nodes = []
         self.sentence = u''
 
-    def parse(disambiguated):
-        disambiguator
+    def parse(self, disambiguated):
+        disambiguator.push_disambiguated_to_cpp(disambiugated)
         syntax_parser_lib.SyntaxParse()
 
 class SyntaxParser(object):
     def __init__(self, language):
         syntax_parser_lib.CreateSyntaxParser(language)
         self.language = language
+
+    def parse(self, disambiguated):
+        disambiguator.push_disambiguated_to_cpp(disambiguated)
 
 class SyntaxParserTest(unittest.TestCase):
     def test_time_creation(self):
@@ -38,6 +41,19 @@ class SyntaxParserTest(unittest.TestCase):
         parser = SyntaxParser("RU")
         spent_time = time.time() - start_time
         self.assertLess(spent_time, 1e-3)
+
+    def test_syntax_parsing(self):
+        print '----------------------------------------------------------------------'
+        sentence = u"мать видит дочь"
+        print "Input sentence: ", sentence
+        print ''
+        tokenizator = tokenizer.Tokenizer("RU")
+        tokens = tokenizator.tokenize(sentence)
+        disambiger = disambiguator.Disambiguator("RU")
+        disambiguated = disambiger.disambiguate(tokens)
+        parser = SyntaxParser("RU")
+        parser.parse(disambiguated)
+
 
 if __name__ == '__main__':
     unittest.main()
