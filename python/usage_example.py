@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 from coda.tokenizer import Tokenizer
 from coda.disambiguator import Disambiguator
+from coda.syntax_parser import SyntaxParser
 
 if __name__ == '__main__':
     tokenizer = Tokenizer("RU")
     disambiguator = Disambiguator("RU")
+    syntax_parser = SyntaxParser("RU")
 
-    sentence = u'Большая часть джедаев погибает, а остальные оказываются окружены дроидами.'
+    sentence = u'МИД пригрозил ограничить поездки американских дипломатов по России.'
     tokens = tokenizer.tokenize(sentence)
     disambiguated = disambiguator.disambiguate(tokens)
-    for index, item in enumerate(disambiguated):
-        print index, item.content, item.label, item.lemma
+    tree = syntax_parser.parse(disambiguated)
+
+    print tree.to_string()
+    tree.draw(dot_file="/tmp/tree1.dot", show=True)

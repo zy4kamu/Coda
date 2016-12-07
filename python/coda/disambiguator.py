@@ -30,7 +30,7 @@ def push_disambiguated_to_cpp(disambiguated):
             ctypes.c_double(item.weight), 
             ctypes.c_int(item.lemma_id))
         for punct in item.punctuation:
-            disambiguator_lib.PushParsedDisambiguated(punct)
+            disambiguator_lib.PushParsedDisambiguatedPunctuation(punct)
 
 class Disambiguator(object):
     '''

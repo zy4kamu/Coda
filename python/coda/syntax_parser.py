@@ -99,7 +99,7 @@ class SyntaxParserTest(unittest.TestCase):
         parser = SyntaxParser("RU")
         parsed = parser.parse(disambiguated)
         print parsed.to_string()
-        parsed.draw(dot_file="/tmp/tree.dot", show=True)
+        parsed.draw(dot_file="/tmp/tree.dot", show=False)
 
 if __name__ == '__main__':
     unittest.main()
