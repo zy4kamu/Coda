@@ -3,7 +3,7 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 
 * Sentence splitter
 * Tokenizer
-* Morphology disambiguation (POS-tagging and POS+MORPH-tagging)
+* Morphology disambiguation
 * Dependency parser
 * Stresser
 * Inflector
@@ -11,21 +11,21 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 
 # REQUIREMENTS
 
-* Ubuntu 14.04 or higher
-* cmake version >= 2.8
-* gcc version >= 4.8
-* python version 2.7
-* graphviz (to visualize trees).
+* *Ubuntu* 14.04 or higher
+* *cmake* version >= 2.8
+* *gcc* version >= 4.8
+* *python* version 2.7
+* *graphviz* (to visualize trees).
 
 # INSTALLATION
-1. sudo bash build_cpp.sh (This script builds c++ part of application and put libraries, exec files and configs to /opt/coda)
-2. bash install_python.sh (This script installs python wrapper .egg over c++ to corresponding site_packages folder)
+1. *sudo bash build_cpp.sh* 
+    + This script builds C++ part of application and puts libraries, execution files and configs to */opt/coda*
+2. *bash install_python.sh*
+    + This script installs Python wrapper .egg over C++ to corresponding site_packages folder)
 
 # USAGE EXAMPLE
-* Try:
-**1. cd coda/python
-**2. python usage_example.py
-  
+* Try: *python coda/python/usage_example.py*
+
 * usage_example.py content:
 ```python 
 # -*- coding: utf-8 -*-
@@ -57,3 +57,4 @@ if __name__ == '__main__':
 6 3 по PR по
 7 6 России S@ЕД@ЖЕН@ДАТ@НЕОД россия
 ```
+![example_tree-1](https://cloud.githubusercontent.com/assets/6217675/20967627/b846dbb4-bc80-11e6-931e-93f7ebc97c44.png)
