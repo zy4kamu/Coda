@@ -30,7 +30,14 @@ class SyntaxTree(object):
     def to_string(self):
         return u'\n'.join([node.to_string() for node in self.nodes])
 
+    def __push_to_cpp(self):
+        disambiguator.push_disambiguated_to_cpp(self.nodes)
+        syntax_parser_lib.CreateTreeFromParsedDisambiguated()
+        for i, node in enumerate(self.nodes):
+            syntax_parser_lib.SetParent(i, node.parent_index)
+
     def draw(self, dot_file="", show=False):
+        self.__push_to_cpp()
         func = syntax_parser_lib.Draw
         func(dot_file, show)
 
@@ -92,7 +99,7 @@ class SyntaxParserTest(unittest.TestCase):
         parser = SyntaxParser("RU")
         parsed = parser.parse(disambiguated)
         print parsed.to_string()
-        parsed.draw(show=True)
+        parsed.draw(dot_file="/tmp/tree.dot", show=True)
 
 if __name__ == '__main__':
     unittest.main()

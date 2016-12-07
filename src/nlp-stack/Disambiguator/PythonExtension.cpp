@@ -99,7 +99,7 @@ void PushParsedDisambiguatedPunctuation(const wchar_t* punctuation)
     parsedDisambiguated.back().punctuation.push_back(punctuation);
 }
 
-void ResetParsedDisabiguated()
+void ResetParsedDisambiguated()
 {
     parsedDisambiguated.clear();
 }

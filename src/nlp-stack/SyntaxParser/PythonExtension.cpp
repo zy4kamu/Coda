@@ -1,4 +1,4 @@
-#include "SyntaxParser.hpp"
+#include "PythonExtension.h"
 #include "Drawer.h"
 #include "Disambiguator/PythonExtension.h"
 
@@ -7,6 +7,8 @@ extern "C"
 
 namespace SyntaxParser
 {
+
+/* FUNCTIONS RELATED TO SYNTAX PARSER */
 
 SyntaxTree currentTree;
 
@@ -43,7 +45,27 @@ int GetParentIndex(size_t tokenIndex)
 void Draw(const char* outputFile, bool openPDF)
 {
     Drawer drawer(outputFile);
-    drawer.Draw(currentTree, openPDF);
+    drawer.Draw(parsedTree, openPDF);
+}
+
+/* FUNCTION RELATED TO PARSING PYTHON INPUT */
+
+SyntaxTree parsedTree;
+
+void CreateTreeFromParsedDisambiguated()
+{
+    parsedTree = SyntaxTree(Disambiguation::parsedDisambiguated);
+}
+
+void SetParent(int index, int parentIndex)
+{
+    vector<SyntaxNode>& nodes = parsedTree.GetNodes();
+    nodes[index].parentIndex = parentIndex;
+    if (parentIndex == -1) {
+        parsedTree.SetRoot(index);
+    } else {
+        nodes[parentIndex].neighbours.push_back(index);
+    }
 }
 
 }

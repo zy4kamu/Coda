@@ -23,6 +23,7 @@ class DisambiguatedData(tokenizer.Token):
         self.punctuation = token.punctuation
 
 def push_disambiguated_to_cpp(disambiguated):
+    disambiguator_lib.ResetParsedDisambiguated()
     for item in disambiguated:
         disambiguator_lib.PushParsedDisambiguated(
             item.content, item.lemma, item.label,

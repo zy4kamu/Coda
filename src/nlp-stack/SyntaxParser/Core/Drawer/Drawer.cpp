@@ -8,23 +8,23 @@ Drawer::Drawer(const string& outputFile)
 {
 }
 
-void Drawer::Draw(const SyntaxTree& real, const SyntaxTree& predicted, bool openPDF)
+void Drawer::Draw(const SyntaxTree& real, const SyntaxTree& predicted, bool createPDF)
 {
-    draw(getDualDotText(real, predicted), openPDF);
+    draw(getDualDotText(real, predicted), createPDF);
 }
 
-void Drawer::Draw(const SyntaxTree& tree, bool openPDF)
+void Drawer::Draw(const SyntaxTree& tree, bool createPDF)
 {
-    draw(tree.ToDotString(), openPDF);
+    draw(tree.ToDotString(), createPDF);
 }
 
-void Drawer::draw(const wstring& dotGraph, bool openPDF)
+void Drawer::draw(const wstring& dotGraph, bool createPDF)
 {
     wofstream out(outputFile);
     out << dotGraph;
     out.close();
 
-    if (openPDF)
+    if (createPDF)
     {
         string drawTreeScript = SYNTAX_DRAW_TREE_SCRIPT;
         drawTreeScript += " ";
