@@ -24,7 +24,7 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
     + This script installs Python wrapper .egg over C++ to corresponding site_packages folder)
 
 # USAGE EXAMPLE
-* Try: *python coda/python/usage_examply.py*
+* Try: *python coda/python/usage_example.py*
 
 * usage_example.py content:
 ```python 
