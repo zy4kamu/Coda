@@ -57,3 +57,4 @@ if __name__ == '__main__':
 6 3 по PR по
 7 6 России S@ЕД@ЖЕН@ДАТ@НЕОД россия
 ```
+![alt tag](https://github.com/zy4kamu/Coda/files/636557/example_tree.pdf)
