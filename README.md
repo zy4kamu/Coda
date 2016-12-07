@@ -22,10 +22,8 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 2. bash install_python.sh (This script installs python wrapper .egg over c++ to corresponding site_packages folder)
 
 # USAGE EXAMPLE
-* Try:
-**1. cd coda/python
-**2. python usage_example.py
-  
+* Try: *python coda/python/usage_examply.py*
+
 * usage_example.py content:
 ```python 
 # -*- coding: utf-8 -*-
@@ -57,4 +55,4 @@ if __name__ == '__main__':
 6 3 по PR по
 7 6 России S@ЕД@ЖЕН@ДАТ@НЕОД россия
 ```
-![alt tag](https://github.com/zy4kamu/Coda/files/636557/example_tree.pdf)
+![example_tree-1](https://cloud.githubusercontent.com/assets/6217675/20967627/b846dbb4-bc80-11e6-931e-93f7ebc97c44.png)
