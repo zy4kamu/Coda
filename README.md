@@ -11,11 +11,11 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 
 # REQUIREMENTS
 
-* Ubuntu 14.04 or higher
-* cmake version >= 2.8
-* gcc version >= 4.8
-* python version 2.7
-* graphviz (to visualize trees).
+* *Ubuntu* 14.04 or higher
+* *cmake8 version >= 2.8
+* *gcc* version >= 4.8
+* *python* version 2.7
+* *graphviz* (to visualize trees).
 
 # INSTALLATION
 1. *sudo bash build_cpp.sh* 
