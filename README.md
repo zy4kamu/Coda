@@ -3,7 +3,7 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 
 * Sentence splitter
 * Tokenizer
-* Morphology disambiguation (POS-tagging and POS+MORPH-tagging)
+* Morphology disambiguation
 * Dependency parser
 * Stresser
 * Inflector
@@ -18,8 +18,10 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 * graphviz (to visualize trees).
 
 # INSTALLATION
-1. sudo bash build_cpp.sh (This script builds c++ part of application and put libraries, exec files and configs to /opt/coda)
-2. bash install_python.sh (This script installs python wrapper .egg over c++ to corresponding site_packages folder)
+1. *sudo bash build_cpp.sh* 
+    + This script builds C++ part of application and puts libraries, execution files and configs to */opt/coda*
+2. *bash install_python.sh*
+    + This script installs Python wrapper .egg over C++ to corresponding site_packages folder)
 
 # USAGE EXAMPLE
 * Try: *python coda/python/usage_examply.py*
