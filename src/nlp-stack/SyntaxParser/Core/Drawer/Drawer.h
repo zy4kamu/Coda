@@ -41,11 +41,14 @@ namespace SyntaxParser
 class Drawer
 {
 public:
-    void Draw(const SyntaxTree& real, const SyntaxTree& predicted);
-    void Draw(const SyntaxTree& tree);
+    Drawer(const string& outputFile = SYNTAX_OUTPUT_TREE_PATH);
+    void Draw(const SyntaxTree& real, const SyntaxTree& predicted, bool createPDF=true);
+    void Draw(const SyntaxTree& tree, bool createPDF=true);
 private:
-    void draw(const wstring& dotGraph);
+    void draw(const wstring& dotGraph, bool createPDF);
     wstring getDualDotText(const SyntaxTree& real, const SyntaxTree& predicted);
+
+    string outputFile;
 };
 
 }

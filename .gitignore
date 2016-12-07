@@ -6,4 +6,6 @@ Coda/python/lib
 *.pyc
 Coda/python/coda.egg-info/
 Coda/python/dist/
-
+python/coda.egg-info/
+python/dist/
+*tree.dot

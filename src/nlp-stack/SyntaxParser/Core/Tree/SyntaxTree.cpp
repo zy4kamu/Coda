@@ -195,8 +195,7 @@ wstring SyntaxTree::ToDotString(bool createCap, const wstring& nodesPrefix) cons
     for (size_t nodeIndex = 0; nodeIndex < nodes.size(); ++nodeIndex)
     {
         wstring itString = Tools::ToWstring(nodeIndex);
-        vector<wstring> splitted;
-        dot2texTree += L"\t" + nodesPrefix + L"node_" + itString 
+        dot2texTree += L"\t" + nodesPrefix + L"node_" + itString
             + L"[label=\"" + itString + L": " + nodes[nodeIndex].content + L"\\n" + nodes[nodeIndex].label
             + L"\"];\n";
     }

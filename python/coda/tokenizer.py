@@ -5,7 +5,7 @@ import common
 tokenizer_lib = common.load_library('tokenizer')
 
 class Token(object):
-    def __int__(self):
+    def __init__(self):
         self.content = u''
         self.punctuation = []
 
