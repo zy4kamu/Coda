@@ -5,6 +5,12 @@ import tokenizer, disambiguator, common
 syntax_parser_lib = common.load_library('syntax-parser')
 
 class SyntaxNode(disambiguator.DisambiguatedData):
+    '''
+    Extends disambiguator.DisambiguatedData 
+    with dependency parsing information:
+        index: index of token in the sentence
+        parent_index: index of parent in the sentence (-1 for root)
+    '''
     def __init__(self):
         self.index = -1
         self.parent_index = -1
@@ -22,13 +28,47 @@ class SyntaxNode(disambiguator.DisambiguatedData):
             self.content, self.label, self.lemma)
 
 class SyntaxTree(object):
+    '''
+    Dependency parsing tree
+    '''
     def __init__(self):
         self.root_index = -1
         self.nodes = []
         self.sentence = u''
 
     def to_string(self):
+        '''
+        Converts tree to a readable string.
+
+        Notes
+        -----
+        We don't use str or repr functions to 
+        express that output is unicode string
+
+        '''
         return u'\n'.join([node.to_string() for node in self.nodes])
+
+    def draw(self, dot_file, show=False):
+        '''
+        Produces .dot format file and visualizes it.
+
+        Parameters
+        ----------
+
+        dot_file: str
+            output .dot file 
+
+        show: boolean
+            if true then it uses graphiz to create 
+            .pdf file and okular to open it.
+        
+        Notes
+        -----
+        After you close the .pdf file it is deleted by default.
+        '''
+        self.__push_to_cpp()
+        func = syntax_parser_lib.Draw
+        func(dot_file, show)
 
     def __push_to_cpp(self):
         disambiguator.push_disambiguated_to_cpp(self.nodes)
@@ -36,17 +76,34 @@ class SyntaxTree(object):
         for i, node in enumerate(self.nodes):
             syntax_parser_lib.SetParent(i, node.parent_index)
 
-    def draw(self, dot_file="", show=False):
-        self.__push_to_cpp()
-        func = syntax_parser_lib.Draw
-        func(dot_file, show)
-
 class SyntaxParser(object):
+    '''
+    Given output of disambiguator creates dependency parser tree
+
+    Parameters
+    ----------
+
+    language: str
+        Language used for disambiguation (RU, EN, ...)
+
+    '''
     def __init__(self, language):
         syntax_parser_lib.CreateSyntaxParser(language)
         self.language = language
 
     def parse(self, disambiguated):
+        '''
+        performs syntax parsing
+
+        Parameters
+        ----------
+
+        disambiguated: list of disambiguator.DisambiguatedData
+
+        Returns
+        -------
+        out: instance of SyntaxTree class
+        '''
         disambiguator.push_disambiguated_to_cpp(disambiguated)
         syntax_parser_lib.SyntaxParse(self.language)
         tree = SyntaxTree()

@@ -5,6 +5,10 @@ import common
 tokenizer_lib = common.load_library('tokenizer')
 
 class Token(object):
+    '''
+    Word plus punctuation followed by this word, 
+    a base class for morphological and syntax analysers.
+    '''
     def __init__(self):
         self.content = u''
         self.punctuation = []
@@ -17,11 +21,32 @@ def push_tokens_to_cpp(tokens):
             tokenizer_lib.PushParsedPunctuation(punct)
 
 class Tokenizer(object):
+    '''
+    Given a sentence produces a list of Tokens.
+
+    Parameters
+    ----------
+
+    language: str
+        Language used for tokenization (RU, EN, ...)
+    '''
     def __init__(self, language):
         tokenizer_lib.CreateTokenizer(language)
         self.language = language
 
     def tokenize(self, sentence):
+        '''
+        Splits sentence by tokens
+
+
+        Parameters
+        ----------
+        sentence: unicode string
+
+        Returns
+        -------
+        out: list of Tokens
+        '''
         func = tokenizer_lib.Tokenize
         func.res_type = ctypes.c_size_t
         size = func(sentence, self.language)
@@ -86,5 +111,3 @@ class TimeCreationTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
