@@ -1,4 +1,4 @@
-# DESCRIPTION
+### DESCRIPTION
 Python and C++ realization of NLP stack for **Russian** and **English** language. Includes:
 
 * Sentence splitter
@@ -7,23 +7,25 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 * Dependency parser
 * Stresser
 * Inflector
+* Name entity recognizer
 * ...
 
-# REQUIREMENTS
+### REQUIREMENTS
 
 * *Ubuntu* 14.04 or higher
 * *cmake* version >= 2.8
 * *gcc* version >= 4.8
 * *python* version 2.7
-* *graphviz* (to visualize trees).
+* *graphviz* (to create .dot files for trees).
+* *okular* (to visualize pdf files with trees).
 
-# INSTALLATION
+### INSTALLATION
 1. *sudo bash build_cpp.sh* 
     + This script builds C++ part of application and puts libraries, execution files and configs to */opt/coda*
 2. *bash install_python.sh*
     + This script installs Python wrapper .egg over C++ to corresponding site_packages folder)
 
-# USAGE EXAMPLE
+### USAGE EXAMPLE
 * Try: *python coda/python/usage_example.py*
 
 * usage_example.py content:
