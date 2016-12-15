@@ -62,6 +62,6 @@ if __name__ == '__main__':
 ![example_tree-1](https://cloud.githubusercontent.com/assets/6217675/20967627/b846dbb4-bc80-11e6-931e-93f7ebc97c44.png)
 
 ### Publications
-http://www.dialog-21.ru/digests/dialog2015/materials/pdf/MuzychkaSPiontkovskayaI.pdf
-http://www.dialog-21.ru/digests/dialog2014/materials/pdf/MuzychkaSA.pdf
-http://www.dialog-21.ru/digests/dialog2014/materials/pdf/KudinovMS.pdf
+* http://www.dialog-21.ru/digests/dialog2015/materials/pdf/MuzychkaSPiontkovskayaI.pdf
+* http://www.dialog-21.ru/digests/dialog2014/materials/pdf/MuzychkaSA.pdf
+* http://www.dialog-21.ru/digests/dialog2014/materials/pdf/KudinovMS.pdf
