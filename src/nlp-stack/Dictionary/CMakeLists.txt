@@ -12,8 +12,11 @@
 include (../../common_includes.cmake)
 
 include_directories(
+    ${dictionary_subfolders}
     ${PROJECT_ROOT_DIR}/utils/Tools
+    ${PROJECT_ROOT_DIR}/utils/Tools/Exceptions
 )
+
 
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
 target_link_libraries(${project_name} tools)

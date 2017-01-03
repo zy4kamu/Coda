@@ -37,6 +37,11 @@ file(GLOB tokenizer_subfiles
     ${PROJECT_ROOT_DIR}/nlp-stack/Tokenizer/*/*/)
 only_folders("${tokenizer_subfiles}" tokenizer_subfolders)
 
+file(GLOB dictionary_subfiles
+    ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary/*/
+    ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary/*/*/)
+only_folders("${dictionary_subfiles}" dictionary_subfolders)
+
 file(GLOB sentence_splitter_subfiles
     ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/*/
     ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/*/*/)

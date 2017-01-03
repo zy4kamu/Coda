@@ -20,6 +20,7 @@ set(google_test_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/gtest)
 
 include_directories(
     ${google_test_SOURCE_DIR}
+    ${dictionary_subfolders}
 )
 
 set(google_test_SOURCES
