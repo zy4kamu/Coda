@@ -43,7 +43,10 @@ using std::shared_ptr;
 
 namespace DictionaryOps
 {
-
+/**
+ * @class	DictionaryCreator
+ * @brief	Helper standalone class for dictionary management
+ */
 class DictionaryCreator
 {
 public:
