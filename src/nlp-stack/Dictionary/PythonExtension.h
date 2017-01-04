@@ -9,19 +9,17 @@ using std::vector;
 
 extern "C"
 {
-
 namespace DictionaryOps
 {
-
 /* VARIABLES TO STORE TEMPORARY RESULTS */
 
-extern vector<GrammInfo> getGramInfoReturnValue;
+extern vector<Morphology> getGramInfoReturnValue;
 extern vector<wstring> synthesizeTokenFromLemmaReturnValue;
 
 /* DICTIONARY INTERFACE FUNCTIONS */
-void CreateDictionary(const char* i_language);
-size_t getGramInfo(const wchar_t* i_token);
-size_t synthesizeTokenFromLemma(const wchar_t ** i_grammarFeatures, size_t i_numberOfFeatures);
+void CreateDictionary(const char*  i_language);
+size_t getGramInfo(const wchar_t* i_token, const wchar_t * i_language);
+size_t synthesizeTokenFromLemma(const wchar_t* i_token, const wchar_t ** i_grammarFeatures, size_t i_numberOfFeatures);
 
 /* GETTING RESULTS FROM PYTHON */
 const wchar_t* requestGetGramInfoReturnValue(size_t i_index);
