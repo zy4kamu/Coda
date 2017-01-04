@@ -24,7 +24,7 @@ include_directories(
     ${PROJECT_ROOT_DIR}/nlp-stack/Tokenizer/Core
     ${PROJECT_ROOT_DIR}/nlp-stack/PorterStemmer
     ${PROJECT_ROOT_DIR}/nlp-stack/PorterStemmer/include
-    ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary
+    ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary/Core
 
     ${PROJECT_ROOT_DIR}/utils/Eigen
     ${PROJECT_ROOT_DIR}/utils/RegexpTools

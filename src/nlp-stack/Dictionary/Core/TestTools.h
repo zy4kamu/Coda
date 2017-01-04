@@ -36,8 +36,7 @@
 #ifndef _TESTTOOLS_H_
 #define _TESTTOOLS_H_
 
-#include "DictionaryTrieBinaryFileCreator.h"
-#include "DictionaryTrieBinaryFileReader.h"
+#include "DictionaryTrieBinaryFile.h"
 #include "DictionaryTools.h"
 //#include "TestNGram.h"
 #include "Dictionary.h"

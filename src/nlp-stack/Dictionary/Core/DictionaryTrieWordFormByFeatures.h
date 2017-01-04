@@ -37,7 +37,7 @@
 #ifndef _DICTIONARYTRIEWORDFORMBYFEATURES_H_
 #define _DICTIONARYTRIEWORDFORMBYFEATURES_H_
 
-#include "DictionaryTrieBinaryFileReader.h"
+#include "DictionaryTrieBinaryFile.h"
 
 /**
  * Class DictionaryTrieWordFormByFeatures :
