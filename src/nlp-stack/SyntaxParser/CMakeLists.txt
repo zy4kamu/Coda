@@ -17,13 +17,13 @@ include_directories(
     ${crf_subfolders}
     ${disambiguator_subfolders}
     ${syntax_parser_subfolders}
+    ${dictionary_subfolders}
 
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/Clib
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/EventHandler
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/Optimizer
 
     ${PROJECT_ROOT_DIR}/nlp-stack/
-    ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary/Core
     ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/Core
     ${PROJECT_ROOT_DIR}/nlp-stack/Tokenizer/Core
 

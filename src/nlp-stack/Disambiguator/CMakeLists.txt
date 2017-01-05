@@ -15,6 +15,7 @@ include_directories(
     ${crf_subfolders}
     ${disambiguator_subfolders}
     ${tokenizer_subfolders}
+    ${dictionary_subfolders}
 
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/Clib
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/EventHandler
@@ -25,7 +26,6 @@ include_directories(
     ${PROJECT_ROOT_DIR}/utils/Tools
 
     ${PROJECT_ROOT_DIR}/nlp-stack/
-    ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary/Core
     ${PROJECT_ROOT_DIR}/nlp-stack/Tokenizer/Core
 )
 
