@@ -86,6 +86,11 @@ void cleanGetGramInfoReturnValue()
     getGramInfoReturnValue.clear();
 }
 
+void cleanSynthesizeTokenFromLemmaReturnValue()
+{
+    synthesizeTokenFromLemmaReturnValue.clear();
+}
+
 }
 
 }
