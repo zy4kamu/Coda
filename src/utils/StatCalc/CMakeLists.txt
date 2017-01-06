@@ -14,6 +14,7 @@ include (../../common_includes.cmake)
 include_directories(
     ${crf_subfolders}
     ${disambiguator_subfolders}
+    ${dictionary_subfolders}
 
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/Clib
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/EventHandler

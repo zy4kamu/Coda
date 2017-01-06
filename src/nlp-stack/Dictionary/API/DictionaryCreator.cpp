@@ -29,7 +29,6 @@ DictionaryCreator::getDictionary(Tools::Language i_language)
     if (found == m_dictionaries.end()) {
         Register(std::make_shared<DictionaryFacade>(i_language));
     }
-
     return m_dictionaries[i_language];
 }
 

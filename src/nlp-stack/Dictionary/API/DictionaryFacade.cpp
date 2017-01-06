@@ -61,6 +61,7 @@ DictionaryFacade::DictionaryFacade(Tools::Language i_language)
     {
         throw Tools::LanguageNotFoundException();
     }
+    m_language = i_language;
 }
 
 vector<Morphology> DictionaryFacade::getMorphologicalInformation(const wstring& i_wordForm) const
