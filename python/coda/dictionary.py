@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
-import cffi
+import cffi, os, unittest, time
 
 dicitonry_lib = None
 ffi = None
@@ -78,6 +77,32 @@ class Dictionary:
         return variants
 
 
-d = Dictionary("RU")
-test_word = u"Россия"
-print d.synthesize_wordform(test_word, [u"NOUN", u"inan", u"femn", u"sing", u"Sgtm", u"gent", u"Geox"])[0]
+class DictionaryTest(unittest.TestCase):
+    def test_time_creation(self):
+        print '----------------------------------------------------------------------'
+        dictionary = Dictionary("RU")
+        start_time = time.time()
+        dictionary = Dictionary("RU")
+        spent_time = time.time() - start_time
+        self.assertLess(spent_time, 10e-3)
+
+    def test_wordform_synthesis(self):
+        print "----Testing wordform synthesis. Set word 'Россия' into Genitive case--"
+        test_word = u"Россия"
+        dictionary = Dictionary("RU")
+        test_variant = dictionary.synthesize_wordform(test_word, [u"NOUN", u"inan", u"femn", u"sing", u"Sgtm", u"gent", u"Geox"])[0]
+        print "Synthesized variant: {}".format(test_variant.encode('utf-8'))
+
+    def test_morphological_info(self):
+        print "----Test morphological info. Testing word 'России'-------------------"
+        test_word = u"России"
+        dictionary = Dictionary("RU")
+        morphological_variants = dictionary.morphological_information(test_word)
+        print "Number of variants: {}".format(len(morphological_variants))
+        for variant in morphological_variants:
+            print "Lemma: {}".format(variant.lemma.encode('utf-8'))
+            print "Features: ", variant.features
+
+
+if __name__ == '__main__':
+    unittest.main()
