@@ -23,7 +23,7 @@ size_t getGramInfo(const wchar_t* i_token, const char * i_language)
    getGramInfoReturnValue.clear();
    Tools::Language language = Tools::StringToLanguage(i_language);
    shared_ptr<DictionaryFacade> dic = DictionaryCreator::getDictionaryCreator().getDictionary(language);
-   getGramInfoReturnValue = dic->getMorphologicalInformation(L"Россия");
+   getGramInfoReturnValue = dic->getMorphologicalInformation(i_token);
    return getGramInfoReturnValue.size();
 }
 
