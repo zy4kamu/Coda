@@ -34,8 +34,8 @@
 
 
 //#pragma warning( disable: 4018 )
-#ifndef _DICTIONARYTRIEBINARYFILECREATOR_H_
-#define _DICTIONARYTRIEBINARYFILECREATOR_H_
+#ifndef _DICTIONARYTRIEBINARYFILE_H_
+#define _DICTIONARYTRIEBINARYFILE_H_
 
 #include "DictionaryTrieBuild.h"
 
@@ -114,4 +114,22 @@ protected:
 	int countLink;
 };
 
-#endif /* _DICTIONARYTRIEBINARYFILECREATOR_H_ */
+/**
+ * Class DictionaryTrieBinaryFileReader :
+ * Read from binary file
+ */
+class DictionaryTrieBinaryFileReader : public DictionaryTrieBinaryFileCreator
+{
+public:
+    DictionaryTrieBinaryFileReader(Dictionary* _dic, string dictionaryFile = BIN_DIC_FILE_PATH_RUSSIAN);
+    ~DictionaryTrieBinaryFileReader(void);
+    /**
+     * @brief load models, nodes of trie, links, featureLists and features from binary file
+     */
+    void loadFromBinaryFile(string _filePath);
+protected:
+    // vector of DictionaryNode
+    vector<DictionaryNode*> DictionaryNodeList;
+};
+
+#endif /* _DICTIONARYTRIEBINARYFILE_H_ */

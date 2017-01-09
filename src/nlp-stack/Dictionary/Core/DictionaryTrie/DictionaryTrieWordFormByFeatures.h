@@ -1,6 +1,6 @@
 ﻿/**
- * SuffixModelTrieBinaryFileCreator.h
- * Class SuffixModelTrieBinaryFileCreator
+ * DictionaryTrieWordFormByFeatures.h
+ * Class DictionaryTrieWordFormByFeatures
  *
  * .. invisible:
  *     _   _ _____ _     _____ _____
@@ -34,49 +34,38 @@
 
 
 //#pragma warning( disable: 4018 )
-#ifndef _SUFFIXMODELTRIEBINARYFILECREATOR_H_
-#define _SUFFIXMODELTRIEBINARYFILECREATOR_H_
+#ifndef _DICTIONARYTRIEWORDFORMBYFEATURES_H_
+#define _DICTIONARYTRIEWORDFORMBYFEATURES_H_
 
-#include "SuffixModelTrieBuild.h"
-
-using namespace std;
+#include "DictionaryTrieBinaryFile.h"
 
 /**
- * class SuffixModelTrieBinaryFileCreator for searching featureListId for suffix of a non-dictionary word
- * save to binary file
+ * Class DictionaryTrieWordFormByFeatures :
+ * added SuffixModelTrie
+ * find word form by word and features
  */
-
-class SuffixModelTrieBinaryFileCreator : public SuffixModelTrieBuild
+class DictionaryTrieWordFormByFeatures : public DictionaryTrieBinaryFileReader
 {
 public:
-	SuffixModelTrieBinaryFileCreator(Dictionary* _dic);
-	~SuffixModelTrieBinaryFileCreator(void);
-	
-	/**
-	 * @brief convert SuffixModelNode and its parentId to vector<char>
-	 */
-    vector<unsigned char> binarySuffixModelNode(SuffixModelNode * _node, int _parentId);
-	/**
-	 * @brief write to buffer
-	 */
-    void writeToBuffer(vector<unsigned char> charVector);
-	/**
-	 * @brief build buffer before write it to file
-	 */
-	void buildBuffer(void);
-	/**
-	 * @brief save to binary file
-	 */
-	void saveToBinaryFile(string _filePath);
-protected:
-	// buffer
-    unsigned char *buffer;
-	// size of buffer
-	int bufferSize;
+    DictionaryTrieWordFormByFeatures(Dictionary* _dic, string dictionaryFile);
+	~DictionaryTrieWordFormByFeatures(void);
 
-	int max_frequency_size;
-	int max_frequency;
-	int max_feature_frequency;
+	/**
+	 * @brief get word form by features
+	 */
+	vector<WordForm> getWordFormByFeatures(wstring _word, vector<wstring> features, bool includeLinkedLemmas, bool _beginWithPo);
+	/**
+	 * @brief get word form by features
+	 */
+	vector<WordForm> getWordFormByFeatures(wstring _word, vector<wstring> features, bool includeLinkedLemmas = true);
+	/**
+	 * @brief convert featureListId to feature in form wstring
+	 */
+	vector<wstring> convertFeatureListIdToFeatures(int featureListId);
+	/**
+	 * @brief convert morphological information to feature in form wstring
+	 */
+	vector<wstring> convertMorphologicalInfoToFeatureIds(MorphologicalInfo minfo);
 };
 
-#endif /* _SUFFIXMODELTRIEBINARYFILECREATOR_H_ */
+#endif /* _DICTIONARYTRIEWORDFORMBYFEATURES_H_ */

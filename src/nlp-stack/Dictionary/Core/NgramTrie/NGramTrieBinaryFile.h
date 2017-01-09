@@ -1,6 +1,6 @@
 ﻿/**
- * SuffixModelTrieBinaryFileReader.h
- * Class SuffixModelTrieBinaryFileReader
+ * NGramTrieBinaryFileCreator.h
+ * Class NGramTrieBinaryFileCreator
  *
  * .. invisible:
  *     _   _ _____ _     _____ _____
@@ -34,30 +34,56 @@
 
 
 //#pragma warning( disable: 4018 )
-#ifndef _SUFFIXMODELTRIEBINARYFILEREADER_H_
-#define _SUFFIXMODELTRIEBINARYFILEREADER_H_
+#ifndef _NGRAMTRIEBINARYFILE_H_
+#define _NGRAMTRIEBINARYFILE_H_
 
-#include "SuffixModelTrie.h"
-
-using namespace std;
+#include "NGramTrieBuild.h"
 
 /**
- * class SuffixModelTrieBinaryFileReader for searching featureListId for suffix of a non-dictionary word
- * load from binary file
+ * class NGramTrieBinaryFileCreator :
+ * save N-Gram to binary file
  */
-
-class SuffixModelTrieBinaryFileReader : public SuffixModelTrie
+class NGramTrieBinaryFileCreator : public NGramTrieBuild
 {
 public:
-	SuffixModelTrieBinaryFileReader(Dictionary* _dic);
-	~SuffixModelTrieBinaryFileReader(void);
-	
+	NGramTrieBinaryFileCreator(Dictionary* _dic);
+	~NGramTrieBinaryFileCreator(void);
+
 	/**
-	 * @brief load from binary file
+	 * @brief write a vector of char to buffer
+	 */
+    void writeToBuffer(vector<unsigned char> charVector);
+	/**
+	 * @brief build buffer before write it to file
+	 */
+	void buildBuffer(void);
+	/**
+	 * @brief save to binary file
+	 */
+	void saveToBinaryFile(string _filePath);
+protected:
+	// buffer
+    unsigned char *buffer;
+	// size of buffer
+	int bufferSize;
+};
+
+/**
+ * class NGramTrieBinaryFileReader :
+ * load N-Gram from binary file
+ */
+class NGramTrieBinaryFileReader : public NGramTrie
+{
+public:
+	NGramTrieBinaryFileReader(Dictionary* _dic);
+	~NGramTrieBinaryFileReader(void);
+
+	/**
+	 * @brief load n-gram data from binary file
 	 */
 	void loadFromBinaryFile(string _filePath);
 protected:
-	vector<SuffixModelNode*> SuffixModelNodeList;
+	// vector of NGramNode
+	vector<NGramNode*> NGramNodeList;
 };
-
-#endif /* _SUFFIXMODELTRIEBINARYFILEREADER_H_ */
+#endif /* _NGRAMTRIEBINARYFILE_H_ */

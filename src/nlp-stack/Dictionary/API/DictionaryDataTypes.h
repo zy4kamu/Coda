@@ -103,6 +103,7 @@
 //#define BIN_DIC_FILE_PATH "DicVer6.bin"
 #define BIN_DIC_FILE_PATH_RUSSIAN "RussianMorphologyVer2.bin"
 #define BIN_DIC_FILE_PATH_ENGLISH "EnglishMorphologyVer2.bin"
+#define BIN_DIC_FILE_PATH_ENGLISH1 "EnglishMorphology.bin"
 #define MORPHOLOGY_RULES_PATH "EnglishMorphologyRules.txt"
 // Path to feature list file
 #define FEATURE_PATH "FeatureList.txt"

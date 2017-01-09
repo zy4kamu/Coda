@@ -1,41 +1,54 @@
 ﻿/**
- * Morphology.cpp
+ * MorphologicalDictionary.cpp
  */
 
-#include "MorphologicalDictionaryBackup.h"
-/*
-int MorphologicalDictionaryBackup::morphology_count = 0;
-int MorphologicalDictionaryBackup::prediction_count = 0;
-int MorphologicalDictionaryBackup::rule_count = 0;
-int MorphologicalDictionaryBackup::e_count = 0;
+#include "MorphologicalDictionary.h"
 
-MorphologicalDictionaryBackup::MorphologicalDictionaryBackup(const string & binaryFileName)
+int MorphologicalDictionary::morphology_count = 0;
+int MorphologicalDictionary::prediction_count = 0;
+int MorphologicalDictionary::rule_count = 0;
+int MorphologicalDictionary::e_count = 0;
+
+MorphologicalDictionary::MorphologicalDictionary(const string & binaryFileName,
+                                                 bool load_data,
+                                                 shared_ptr<DictionaryTools> _tools)
 {
-   tools = make_shared<DictionaryTools>();
+    if (_tools == NULL)
+    {
+        tools = make_shared<DictionaryTools>();
+    }
+    else
+    {
+        tools = _tools;
+    }
+    root = NULL;
+    suffix_root = NULL;
 
-   string path = BIN_DIC_DATA_PATH;
+    if (load_data)
+    {
+        string path = BIN_DIC_DATA_PATH;
 
-   string binary_file_path = path + binaryFileName;
-   readBinaryFile(binary_file_path);
+        string binary_file_path = path + binaryFileName;
+        readBinaryFile(binary_file_path);
 
-   string rules_path = path + MORPHOLOGY_RULES_PATH;
-   readRulesFromTextFile(rules_path);
+        string rules_path = path + MORPHOLOGY_RULES_PATH;
+        readRulesFromTextFile(rules_path);
 
-   init();
+        init();
+    }
 
-   useRules = false;
-   usePrediction = false;
-   min_suffix_length = 2;
-   useLink = true;
-   useE = true;
+    useRules = false;
+    usePrediction = false;
+    min_suffix_length = 2;
+    useE = true;
 }
 
-MorphologicalDictionaryBackup::~MorphologicalDictionaryBackup()
+MorphologicalDictionary::~MorphologicalDictionary()
 {
 
 }
 
-void MorphologicalDictionaryBackup::initSuffixMNodeItem()
+void MorphologicalDictionary::initSuffixMNodeItem()
 {
     bool debug = false;
     if (debug)
@@ -53,46 +66,23 @@ void MorphologicalDictionaryBackup::initSuffixMNodeItem()
         shared_ptr<MNode> current_node = node_queue.front();
         node_queue.pop();
 
-        for (map<int, shared_ptr<MNodeModel> >::iterator iter = current_node->lemmaId_MNodeModel.begin();
+        for (map<int, shared_ptr<MNodeModel> >::iterator
+             iter = current_node->lemmaId_MNodeModel.begin();
              iter != current_node->lemmaId_MNodeModel.end(); ++iter)
         {
             shared_ptr<MNodeModel> mNodeModel = iter->second;
             int model_id = mNodeModel->model_id;
             shared_ptr<MModel> mmodel = mmodels.at(model_id);
 
-            size_t element_count = 0;
-            size_t number_of_element = mmodel->elements.size();
-
-            shared_ptr<MModelElement> first_model_element = *(mmodel->elements.begin());
-            int feature_list_id_of_lemma = first_model_element->feature_list_id;
-
-            // set <suffix, po>
-            set<pair<wstring, bool> > suffix_po_set;
-            suffix_po_set.clear();
-
-            for (vector<shared_ptr<MModelElement> >::reverse_iterator
-                 m_iter = mmodel->elements.rbegin();
-                 m_iter != mmodel->elements.rend(); ++m_iter)
+            for (vector<shared_ptr<MModelElement> >::iterator
+                 m_iter = mmodel->elements.begin();
+                 m_iter != mmodel->elements.end(); ++m_iter)
             {
-                element_count++;
                 shared_ptr<MModelElement> model_element = *m_iter;
-                pair<wstring, bool> suffix_po;
-                suffix_po.first = model_element->suffix;
-                suffix_po.second = model_element->po;
-                // if found result, do not check first element
-                if (element_count == number_of_element &&
-                    suffix_po_set.find(suffix_po)
-                    != suffix_po_set.end())
-                {
-                    break;
-                }
-
-                suffix_po_set.insert(suffix_po);
 
                 shared_ptr<MNodeItem> node_item = std::make_shared<MNodeItem>();
                 node_item->lemma_id = iter->first;
                 node_item->po = model_element->po;
-                node_item->feature_list_id_of_lemma = feature_list_id_of_lemma;
                 node_item->feature_list_id = model_element->feature_list_id;
                 map<wstring, shared_ptr<vector<shared_ptr<MNodeItem> > > >::iterator
                     mn_iter = current_node->suffix_MNodeItem.find(model_element->suffix);
@@ -132,7 +122,7 @@ void MorphologicalDictionaryBackup::initSuffixMNodeItem()
     }
 }
 
-void MorphologicalDictionaryBackup::initLemmaIdLemma()
+void MorphologicalDictionary::initLemmaIdLemma()
 {
     bool debug = false;
     if (debug)
@@ -150,7 +140,8 @@ void MorphologicalDictionaryBackup::initLemmaIdLemma()
         shared_ptr<MNode> current_node = node_queue.front();
         node_queue.pop();
 
-        for (map<int, shared_ptr<MNodeModel> >::iterator iter = current_node->lemmaId_MNodeModel.begin();
+        for (map<int, shared_ptr<MNodeModel> >::iterator
+             iter = current_node->lemmaId_MNodeModel.begin();
              iter != current_node->lemmaId_MNodeModel.end(); ++iter)
         {
             shared_ptr<MNodeModel> mNodeModel = iter->second;
@@ -193,84 +184,17 @@ void MorphologicalDictionaryBackup::initLemmaIdLemma()
     }
 }
 
-void MorphologicalDictionaryBackup::initSuffixModel()
-{
-    bool debug = false;
-    if (debug)
-    {
-        wcout << ">>> initSuffixModel: " << endl;
-    }
-    for (vector<shared_ptr<MModel> >::iterator iter = mmodels.begin() + 1;
-         iter != mmodels.end(); ++iter)
-    {
-        shared_ptr<MModel> mmodel = *iter;
-        if (mmodel->elements.empty())
-        {
-            if (debug)
-            {
-                wcout << "# EMPTY MODEL !!!" << endl;
-            }
-            continue;
-        }
-        size_t element_count = 0;
-        size_t number_of_element = mmodel->elements.size();
-        set<wstring> suffix_set;
-        suffix_set.clear();
-
-        shared_ptr<MModelElement> first_element = *(mmodel->elements.begin());
-
-        for (vector<shared_ptr<MModelElement> >::reverse_iterator e_iter = mmodel->elements.rbegin();
-             e_iter != mmodel->elements.rend(); ++e_iter)
-        {
-            shared_ptr<MModelElement> element = *e_iter;
-            element_count++;
-            // if suffix already in other word form of this lemma -> do not check first element
-            if (element_count == number_of_element &&
-                suffix_set.find(element->suffix) != suffix_set.end())
-            {
-                break;
-            }
-            suffix_set.insert(element->suffix);
-
-            shared_ptr<SuffixModel> smodel = make_shared<SuffixModel>();
-            smodel->feature_list_id = element->feature_list_id;
-            smodel->first_element = first_element;
-
-            map<wstring, shared_ptr<vector<shared_ptr<SuffixModel> > > >::iterator s_iter
-                    = suffix_model.find(element->suffix);
-            shared_ptr<vector<shared_ptr<SuffixModel> > > smodel_vector;
-            if (s_iter == suffix_model.end())
-            {
-                smodel_vector = make_shared<vector<shared_ptr<SuffixModel> > >();
-                suffix_model.insert(pair<wstring, shared_ptr<vector<shared_ptr< SuffixModel> > > >
-                  (element->suffix, smodel_vector));
-            }
-            else
-            {
-                smodel_vector = s_iter->second;
-            }
-            smodel_vector->push_back(smodel);
-        }
-    }
-    if (debug)
-    {
-        wcout << "========= OK =========" << endl;
-    }
-}
-
-void MorphologicalDictionaryBackup::init()
+void MorphologicalDictionary::init()
 {
     initSuffixMNodeItem();
     initLemmaIdLemma();
-    initSuffixModel();
 }
 
-void MorphologicalDictionaryBackup::getMorphologyPo(const wstring & lower_word, bool po, shared_ptr<vector<shared_ptr<Morphology> > > result)
+void MorphologicalDictionary::getMorphologyPo(const wstring & lower_word, bool po, shared_ptr<vector<shared_ptr<Morphology> > > result)
 {
     morphology_count++;
 
     bool debug = false;
-    // convert word to lower-cased
     size_t l = lower_word.length();
     shared_ptr<MNode> current_node = root;
     wstring current_prefix = po ? L"по" : L"";
@@ -283,72 +207,57 @@ void MorphologicalDictionaryBackup::getMorphologyPo(const wstring & lower_word, 
             wcout << "Number of models = " << current_node->lemmaId_MNodeModel.size() << endl;
         }
 
-        wstring suffix = lower_word.substr(i, l - i + 1);
+        wstring suffix = lower_word.substr(i, l - i);
 
         map<wstring, shared_ptr<vector<shared_ptr<MNodeItem> > > >::iterator s_iter
                 = current_node->suffix_MNodeItem.find(suffix);
         if (s_iter != current_node->suffix_MNodeItem.end())
         {
+            if (debug)
+            {
+                wcout << "Found suffix: " << suffix << endl;
+            }
             shared_ptr<vector<shared_ptr<MNodeItem> > > items = s_iter->second;
+            if (debug)
+            {
+                wcout << "items->size() = " << items->size() << endl;
+            }
             for (vector<shared_ptr<MNodeItem> >::iterator mn_iter = items->begin();
                  mn_iter != items->end(); ++mn_iter)
             {
                 shared_ptr<MNodeItem> item = *mn_iter;
-                if (item->po == po)
+                if (item->feature_list_id <= 0 || item->po != po)
                 {
-                    shared_ptr<Morphology> morphology = std::make_shared<Morphology>();
-                    morphology->lemma_id = item->lemma_id;
-                    if (useLink)
-                    {
-                        map<int, int>::iterator l_iter = links.find(item->lemma_id);
-                        if (l_iter != links.end())
-                        {
-                            morphology->lemma = lemmas.at(l_iter->second);
-                        }
-                        else
-                        {
-                            morphology->lemma = lemmas.at(item->lemma_id);
-                        }
-                    }
-                    else
-                    {
-                        morphology->lemma = lemmas.at(item->lemma_id);
-                    }
-
-                    // word
-                    morphology->word = make_shared<wstring>(lower_word);
-
-                    //morphology->features
-
-                    // feature from first model elements
-                    if (item->feature_list_id_of_lemma > 0)
-                    {
-                        for (vector<int>::iterator
-                             f_iter = id_feature_list.at(item->feature_list_id_of_lemma).begin();
-                             f_iter != id_feature_list.at(item->feature_list_id_of_lemma).end();
-                             ++f_iter)
-                        {
-                            morphology->features.push_back(id_short_feature.at(*f_iter));
-                            morphology->descriptions.push_back(id_long_feature.at(*f_iter));
-                        }
-                    }
-
-                    // feature from current model elements
-                    if (item->feature_list_id > 0 &&
-                        item->feature_list_id != item->feature_list_id_of_lemma)
-                    {
-                        for (vector<int>::iterator
-                             f_iter = id_feature_list.at(item->feature_list_id).begin();
-                             f_iter != id_feature_list.at(item->feature_list_id).end();
-                             ++f_iter)
-                        {
-                            morphology->features.push_back(id_short_feature.at(*f_iter));
-                            morphology->descriptions.push_back(id_long_feature.at(*f_iter));
-                        }
-                    }
-
-                    result->push_back(morphology);
+                    continue;
                 }
+                shared_ptr<Morphology> morphology = std::make_shared<Morphology>();
+                morphology->lemma_id = item->lemma_id;
+                morphology->lemma = lemmas.at(item->lemma_id);
+                morphology->word = make_shared<wstring>(lower_word);
+                morphology->suffix_length = l - i;
+
+                //morphology->features
+                if (debug)
+                {
+                    wcout << "item->feature_list_id = " << item->feature_list_id << endl;
+                }
+                for (vector<int>::iterator
+                     f_iter = id_feature_list.at(item->feature_list_id).begin();
+                     f_iter != id_feature_list.at(item->feature_list_id).end();
+                     ++f_iter)
+                {
+                    if (debug)
+                    {
+                        wcout << "*f_iter = " << *f_iter << endl;
+                    }
+                    morphology->features.push_back(id_short_feature.at(*f_iter));
+                    morphology->descriptions.push_back(id_long_feature.at(*f_iter));
+                    if (debug)
+                    {
+                        wcout << "f_iter ok " << endl;
+                    }
+                }
+                result->push_back(morphology);
             }
         }
         // go to child node
@@ -363,6 +272,10 @@ void MorphologicalDictionaryBackup::getMorphologyPo(const wstring & lower_word, 
         }
         current_node = child_iterator->second;
         current_prefix.push_back(lower_word.at(i));
+    }
+    if (debug)
+    {
+        wcout << "getMorphologyPo >> OK" << endl;
     }
 }
 
@@ -382,7 +295,8 @@ void addFidToSet(int lemmaId, int fid, shared_ptr<map<int, shared_ptr<set<int> >
     }
 }
 
-void MorphologicalDictionaryBackup::getFeatureListOfLemmaPo(shared_ptr<wstring> lower_lemma, bool po, shared_ptr<map<int, shared_ptr<set<int> > > > lemmaId_wordFLIDs)
+void MorphologicalDictionary::getFeatureListOfLemmaPo(shared_ptr<wstring> lower_lemma,
+              bool po, shared_ptr<map<int, shared_ptr<set<int> > > > lemmaId_wordFLIDs)
 {
     bool debug = false;
     if (debug)
@@ -436,22 +350,26 @@ void MorphologicalDictionaryBackup::getFeatureListOfLemmaPo(shared_ptr<wstring> 
     }
 }
 
-void MorphologicalDictionaryBackup::getFeatureListOfLemma(shared_ptr<wstring> lower_lemma, shared_ptr<map<int, shared_ptr<set<int> > > > lemmaId_wordFLIDs)
+void MorphologicalDictionary::getFeatureListOfLemma(shared_ptr<wstring> lower_lemma,
+                    shared_ptr<map<int, shared_ptr<set<int> > > > lemmaId_wordFLIDs)
 {
     this->getFeatureListOfLemmaPo(lower_lemma, false, lemmaId_wordFLIDs);
-    if (lower_lemma->length() >= 2 && lower_lemma->at(0) == L'п' && lower_lemma->at(1) == L'о')
+    if (lower_lemma->length() >= 2
+            && lower_lemma->at(0) == L'п' && lower_lemma->at(1) == L'о')
     {
         this->getFeatureListOfLemmaPo(lower_lemma, true, lemmaId_wordFLIDs);
     }
 }
 
-void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
+void MorphologicalDictionary::readBinaryFile(const string & filePath)
 {
     bool debug = false;
     maxLemmaId = 0;
-//    wcout << "loadFromBinaryFile" << endl;
+    if (debug)
+    {
+        wcout << "loadFromBinaryFile" << endl;
+    }
     ifstream f(filePath.c_str(), ios::in|ios::binary|ios::ate);
-    unsigned char* buffer;
     if (f.is_open())
     {
         // get size of file
@@ -459,7 +377,7 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
         // jump to begin of file
         f.seekg(0, ios::beg);
 
-        //============= Read NodeVer3s ============================================================================================
+        //============= 1. Nodes ===============
         // allocate buffer
         buffer = new unsigned char[size];
         // read file
@@ -489,20 +407,10 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             // create new NodeVer3
             shared_ptr<MNode> _node = std::make_shared<MNode>();
             _node->character = _character;
-            if (_parentId >= 0)
+            if (_parentId >= 0 && _parentId < (int) _nodes.size())
             {
-                if (_parentId < (int) _nodes.size())
-                {
-                    _node->parent = _nodes.at(_parentId);
-                    _nodes.at(_parentId)->children.insert(pair<wchar_t, shared_ptr<MNode> >(_character, _node));
-                }
-                else
-                {
-//                    if (debug)
-//                    {
-//                        wcout << "_parentId = " << _parentId << " _nodes.size() = " << _nodes.size() << endl;
-//                    }
-                }
+                _node->parent = _nodes.at(_parentId);
+                _nodes.at(_parentId)->children.insert(pair<wchar_t, shared_ptr<MNode> >(_character, _node));
             }
             else
             {
@@ -516,7 +424,7 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             wcout << "OK 1 : numberOfNodes = " << numberOfNodes << endl;
 //            wcout << root->children.size() << endl;
         }
-        //================ Read NodeModels =========================================================================================
+        //================ 2. NodeModels ===================
 
         // read number of NodeModel
         // convert 3 bytes to number of NodeModel
@@ -543,11 +451,6 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
                 maxLemmaId = _lemmaId;
             }
 
-//            if (debug && _lemmaId >= numberOfNodeModel)
-//            {
-//                wcout << "# " << _lemmaId << " >= " << numberOfNodeModel << endl;
-//            }
-
             shared_ptr<MNodeModel> node_model = std::make_shared<MNodeModel>();
             node_model->model_id = _modelId;
             lemmaId_MNodeModel.at(_lemmaId) = node_model;
@@ -559,34 +462,7 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             wcout << "OK 2 : numberOfNodeModel = " << numberOfNodeModel << endl;
         }
 
-        //================ Read links =========================================================================================
-
-        // read number of links
-        // convert 3 bytes to number of links
-        int numberOfLinks = buffer[offset] * 65536 + buffer[offset + 1] * 256 + buffer[offset + 2];
-        offset += 3;
-        if (debug)
-        {
-            wcout << "numberOfLinks = " << numberOfLinks << endl;
-        }
-        // read links
-        for (int i = 0; i < numberOfLinks; ++i)
-        {
-            // convert the first 3 bytes to _fromLemmaId
-            int lemma_id_1 = buffer[offset] * 65536 + buffer[offset + 1] * 256 + buffer[offset + 2];
-            // convert the 3 remaining bytes to _toLemmaId
-            int lemma_id_2 = buffer[offset + 3] * 65536 + buffer[offset + 4] * 256 + buffer[offset + 5];
-            offset += 6;
-            lemmaId_MNodeModel.at(lemma_id_2)->link = lemmaId_MNodeModel.at(lemma_id_1);
-            links.insert(pair<int, int>(lemma_id_2, lemma_id_1));
-        }
-
-        if (debug)
-        {
-            wcout << "OK 3 : Links ok" << endl;
-        }
-
-        //================ Read TrieModels =========================================================================================
+        //================ 3. TrieModels ====================
 
         // read number of TrieModel
         // convert 2 bytes to number of TrieModel
@@ -606,10 +482,6 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             // convert 1 bytes to numberOfTrieModelElement
             int numberOfTrieModelElement = buffer[offset];
             offset += 1;
-//            if (debug)
-//            {
-//                wcout << "TM#" << i << ": elements=" << numberOfTrieModelElement << endl;
-//            }
             for (int j = 0; j < numberOfTrieModelElement; ++j)
             {
                 shared_ptr<MModelElement> _modelElement = std::make_shared<MModelElement>();
@@ -628,18 +500,10 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
                 // convert 2 byte to featureListId
                 int _featureListId = buffer[offset] * 256 + buffer[offset + 1];
                 offset += 2;
-//                wcout << "_featureListId = " << _featureListId << endl;
                 // set featureListId for DictionaryTrieModelElement
                 _modelElement->feature_list_id = _featureListId;
                 // add DictionaryTrieModelElement to DictionaryTrieModel
                 _mModel->elements.push_back(_modelElement);
-//                if (debug)
-//                {
-//                    wcout << "#Element: suffix_len = " << suffixLength
-//                          << " - suffix = " << _modelElement->suffix
-//                          << " - po = " << _modelElement->po
-//                          << " - flid = " << _modelElement->feature_list_id << endl;
-//                }
             }
             // map modelIndex to trieModel
             mmodels.push_back(_mModel);
@@ -650,7 +514,7 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             wcout << "OK 4 : Trie models ok" << endl;
         }
 
-        //================ Read featureListMap  =========================================================================================
+        //================ 4. featureLists  =========================================================================================
 
         // read number of FeatureList
         // convert 2 bytes to number of FeatureList
@@ -668,7 +532,6 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
         {
             // read number of features in list
             int numberOfFeature = buffer[offset];
-//            wcout << "   numberOfFeature = " << numberOfFeature << ": ";
             offset += 1;
             vector<int> featureIdList = vector<int>();
             // read features
@@ -676,12 +539,10 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             {
                 // convert 1 byte to featureId
                 int featureId = buffer[offset];
-//                wcout << featureId << "; ";
                 offset += 1;
                 // add featureId to featureIdList
                 featureIdList.push_back(featureId);
             }
-//            wcout << endl;
             // insert featureIdList to featureListMap
             id_feature_list.push_back(featureIdList);
         }
@@ -691,7 +552,7 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             wcout << "OK 5 : Feature lists ok" << endl;
         }
 
-        //================ Read featureMap  =========================================================================================
+        //================ 5. features  =====================
 
         // read number of features
         // convert 1 bytes to number of FeatureList
@@ -701,13 +562,13 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
         id_long_feature.clear();
         id_long_feature.push_back(NULL);
 
-        int _numberOfFeature = buffer[offset];
+        int _numberOfFeatures = buffer[offset];
         if (debug)
         {
-            wcout << "_numberOfFeature = " << _numberOfFeature << endl;
+            wcout << "_numberOfFeature = " << _numberOfFeatures << endl;
         }
         offset += 1;
-        for (int i = 1; i <= _numberOfFeature; ++i)
+        for (int i = 1; i <= _numberOfFeatures; ++i)
         {
             // short feature
             // convert 1 byte to feature's length
@@ -718,19 +579,10 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             _short_feature->clear();
             for (int j = 0; j < _short_feature_length; ++j)
             {
-                //wcout << buffer[offset + j] << "; ";
                 _short_feature->push_back(tools->charToWchar(buffer[offset + j]));
             }
-            //wcout << endl;
             offset += _short_feature_length;
             id_short_feature.push_back(_short_feature);
-
-            // insert _short_feature to featureMap
-
-//            if (debug)
-//            {
-//                wcout << "Short feature (BIN) #" << i << ": (" << _short_feature_length << ") " << *_short_feature << endl;
-//            }
 
             // long feature
             // convert 1 byte to feature's length
@@ -741,29 +593,112 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
             _long_feature->clear();
             for (int j = 0; j < _long_feature_length; ++j)
             {
-                //wcout << buffer[offset + j] << "; ";
                 _long_feature->push_back(tools->charToWchar(buffer[offset + j]));
             }
-            //wcout << endl;
             offset += _long_feature_length;
             // insert _feature to featureMap
             id_long_feature.push_back(_long_feature);
-//            if (debug)
-//            {
-//                wcout << "Long feature (BIN) #" << i << ": (" << _long_feature_length << ") " << *_long_feature << endl;
-//            }
+            short_to_long_[*_short_feature] = *_long_feature;
         }
         if (debug)
         {
             wcout << "OK 6 : Features ok" << endl;
         }
-        //================ Loading done =========================================================================================
-        delete[] buffer;
-        buffer = NULL;
+
+        // SUFFIX
+
+        // number of suffix nodes
+        int numberOfSuffixNodes = buffer[offset] * 65536
+                + buffer[offset + 1] * 256 + buffer[offset + 2];
+        offset += 3;
         if (debug)
         {
-            wcout << "... loadFromBinaryFile done!" << endl;
+            wcout << "numberOfSuffixNodes = " << numberOfSuffixNodes << endl;
         }
+
+        // read list of SuffixNodes
+        vector<shared_ptr<SuffixNode> > _suffix_nodes;
+        for (int _suffix_node_id = 0;
+             _suffix_node_id < numberOfSuffixNodes; ++_suffix_node_id)
+        {
+            // convert first byte to wchar_t
+            unsigned char _char_code = buffer[offset];
+            wchar_t _character = tools->charToWchar(_char_code);
+            // convert 3 remaining bytes to _parentId
+            int _suffix_parent_node_id = buffer[offset + 1] * 65536
+                    + buffer[offset + 2] * 256 + buffer[offset + 3];
+            offset += 4;
+            // create new NodeVer3
+            shared_ptr<SuffixNode> _suffix_node = std::make_shared<SuffixNode>();
+            _suffix_node->character = _character;
+            _suffix_node->children.clear();
+            if (_suffix_parent_node_id >= 0 &&
+                    _suffix_parent_node_id < (int) _suffix_nodes.size())
+            {
+                _suffix_nodes.at(_suffix_parent_node_id)->children.insert(
+                 pair<wchar_t, shared_ptr<SuffixNode> >(_character, _suffix_node));
+            }
+            _suffix_node->suffix_trie_model_ids.clear();
+            int number_of_models = buffer[offset] * 256 + buffer[offset + 1];
+            offset += 2;
+            for (int j = 0; j < number_of_models; ++j)
+            {
+                int _suffix_model_id = buffer[offset] * 65536
+                        + buffer[offset + 1] * 256 + buffer[offset + 2];
+                offset += 3;
+                _suffix_node->suffix_trie_model_ids.push_back(_suffix_model_id);
+            }
+            _suffix_nodes.push_back(_suffix_node);
+        }
+        if (numberOfSuffixNodes > 0)
+        {
+            suffix_root = _suffix_nodes.at(0);
+        }
+        if (debug)
+        {
+            wcout << "OK 7 : numberOfSuffixNodes = " << numberOfSuffixNodes << endl;
+        }
+
+        // suffix models
+        suffix_models.clear();
+        suffix_models.push_back(NULL);
+
+        int number_of_suffix_models = buffer[offset] * 65536
+                + buffer[offset + 1] * 256 + buffer[offset + 2];
+        offset += 3;
+
+        if (debug)
+        {
+            wcout << "number_of_suffix_models = " << number_of_suffix_models << endl;
+        }
+
+        for (int _suffix_model_id = 0; _suffix_model_id <= number_of_suffix_models;
+             ++ _suffix_model_id)
+        {
+            shared_ptr<SuffixModel> _suffix_model = make_shared<SuffixModel>();
+            // convert 2 byte to featureListId
+            int _featureListId = buffer[offset] * 256 + buffer[offset + 1];
+            offset += 2;
+            // set featureListId for DictionaryTrieModelElement
+            _suffix_model->feature_list_id = _featureListId;
+            _suffix_model->lemma_suffix.clear();
+            // convert 1 byte to suffix's length
+            int lemmaSuffixLength = buffer[offset];
+            offset += 1;
+            // read suffix
+            for (int k = 0; k < lemmaSuffixLength; ++k)
+            {
+                _suffix_model->lemma_suffix.push_back(tools->charToWchar(buffer[offset + k]));
+            }
+            offset += lemmaSuffixLength;
+            suffix_models.push_back(_suffix_model);
+        }
+        if (debug)
+        {
+            wcout << "OK 8 : SuffixModels ok = " << number_of_suffix_models << endl;
+        }
+        delete[] buffer;
+        buffer = NULL;
     }
     else
     {
@@ -772,9 +707,13 @@ void MorphologicalDictionaryBackup::readBinaryFile(const string & filePath)
     }
 }
 
-void MorphologicalDictionaryBackup::readRulesFromTextFile(const string& filePath)
+void MorphologicalDictionary::readRulesFromTextFile(const string& filePath)
 {
-    //wcout << "readRulesFromTextFile ... " << endl;
+    bool debug = false;
+    if (debug)
+    {
+        wcout << "readRulesFromTextFile ... " << endl;
+    }
     wifstream fi(filePath.c_str());
     if (!fi.is_open())
     {
@@ -824,10 +763,14 @@ void MorphologicalDictionaryBackup::readRulesFromTextFile(const string& filePath
         }
     }
     fi.close();
-    //wcout << "readRulesFromTextFile ok" << endl;
+    if (debug)
+    {
+        wcout << "readRulesFromTextFile ok, number of rules = "
+              << ruleSet.morphologyRules.size() << endl;
+    }
 }
 
-void MorphologicalDictionaryBackup::getMorphologicalInfoListByRules(const wstring & lower_word, shared_ptr<vector<shared_ptr<Morphology> > > result)
+void MorphologicalDictionary::getMorphologicalInfoListByRules(const wstring & lower_word, shared_ptr<vector<shared_ptr<Morphology> > > result)
 {
     rule_count++;
 
@@ -881,6 +824,11 @@ void MorphologicalDictionaryBackup::getMorphologicalInfoListByRules(const wstrin
             lemma->push_back(rule.lemma_suffix.at(i));
         }
 
+        if (debug)
+        {
+            wcout << "Found, lemma = " << endl;
+        }
+
         // check <lemma, word_feature_list_id>
         pair<wstring, int> pp(*lemma, rule.word_feature_list_id);
         if (resultSet.find(pp) != resultSet.end())
@@ -915,14 +863,10 @@ void MorphologicalDictionaryBackup::getMorphologicalInfoListByRules(const wstrin
                     wcout << endl;
                 }
                 shared_ptr<Morphology> morphology = std::make_shared<Morphology>();
-                // lemma_id
                 morphology->lemma_id = l_iter->first;
-
-                // lemma
                 morphology->lemma = lemma;
-
-                // word
                 morphology->word = make_shared<wstring>(lower_word);
+                morphology->suffix_length = lws;
 
                 // features
                 for (vector<int>::iterator
@@ -939,88 +883,69 @@ void MorphologicalDictionaryBackup::getMorphologicalInfoListByRules(const wstrin
     }
 }
 
-void MorphologicalDictionaryBackup::getMorphologicalPrediction(const wstring & lower_word, shared_ptr<vector<shared_ptr<Morphology> > > result)
+void MorphologicalDictionary::getMorphologicalPrediction(const wstring & lower_word,
+                                shared_ptr<vector<shared_ptr<Morphology> > > result)
 {
     prediction_count++;
 
     bool debug = false;
-    set<int> featureListIdSet;
-    size_t l = lower_word.length();
+    int l = lower_word.length();
     if (debug)
     {
-        wcout << "Word = " << lower_word << " length = " << l << endl;
+        wcout << "Prediction: Word = " << lower_word << " length = " << l << endl;
     }
-    for (size_t pos = 0; pos < l; ++pos)
+    shared_ptr<SuffixNode> current_node = suffix_root;
+    for (int i = l - 1; i >= 0; --i)
     {
-        if (l - pos < min_suffix_length && !result->empty())
+        wchar_t character = lower_word.at(i);
+        map<wchar_t, shared_ptr<SuffixNode> >::iterator scn_iter
+                = current_node->children.find(character);
+        if (scn_iter != current_node->children.end())
         {
+            current_node = scn_iter->second;
+        }
+        else
+        {
+            for (vector<int>::iterator
+                 m_iter = current_node->suffix_trie_model_ids.begin();
+                 m_iter != current_node->suffix_trie_model_ids.end(); ++m_iter)
+            {
+                int suffix_model_id = *m_iter;
+                shared_ptr<SuffixModel> suffix_model = suffix_models.at(suffix_model_id);
+                if (suffix_model->feature_list_id <= 0)
+                {
+                    continue;
+                }
+
+                shared_ptr<Morphology> morphology = std::make_shared<Morphology>();
+                morphology->lemma_id = 0;
+                morphology->suffix_length = l - 1 - i;
+                // lemma
+                shared_ptr<wstring> lemma = make_shared<wstring>(lower_word, 0, i + 1);
+                lemma->append(suffix_model->lemma_suffix);
+                morphology->lemma = lemma;
+                morphology->word = make_shared<wstring>(lower_word);
+
+                // feature from current model elements
+                for (vector<int>::iterator
+                     f_iter = id_feature_list.at(suffix_model->feature_list_id).begin();
+                     f_iter != id_feature_list.at(suffix_model->feature_list_id).end();
+                     ++f_iter)
+                {
+                    morphology->features.push_back(id_short_feature.at(*f_iter));
+                    morphology->descriptions.push_back(id_long_feature.at(*f_iter));
+                }
+                result->push_back(morphology);
+            }
             break;
-        }
-        wstring suffix(lower_word, pos);
-        map<wstring, shared_ptr<vector<shared_ptr<SuffixModel> > > >::iterator s_iter
-                = suffix_model.find(suffix);
-        if (s_iter == suffix_model.end())
-        {
-            continue;
-        }
-        shared_ptr<vector<shared_ptr<SuffixModel> > > smodels = s_iter->second;
-        for (vector<shared_ptr<SuffixModel> >::iterator m_iter = smodels->begin();
-             m_iter != smodels->end(); ++m_iter)
-        {
-            shared_ptr<SuffixModel> smodel = *m_iter;
-            shared_ptr<MModelElement> first_element = smodel->first_element;
-            int fid = (int) id_feature_list.size() * first_element->feature_list_id
-                    + smodel->feature_list_id;
-            if (featureListIdSet.find(fid) != featureListIdSet.end())
-            {
-                continue;
-            }
-            featureListIdSet.insert(fid);
-
-            shared_ptr<Morphology> morphology = std::make_shared<Morphology>();
-            morphology->lemma_id = 0;
-            morphology->suffix_length = l - pos;
-            // lemma
-            shared_ptr<wstring> lemma = make_shared<wstring>(lower_word, 0, pos);
-            lemma->append(first_element->suffix);
-            morphology->lemma = lemma;
-            morphology->word = make_shared<wstring>(lower_word);
-
-            // feature from first model elements
-            if (first_element->feature_list_id > 0)
-            {
-                for (vector<int>::iterator
-                     f_iter = id_feature_list.at(first_element->feature_list_id).begin();
-                     f_iter != id_feature_list.at(first_element->feature_list_id).end();
-                     ++f_iter)
-                {
-                    morphology->features.push_back(id_short_feature.at(*f_iter));
-                    morphology->descriptions.push_back(id_long_feature.at(*f_iter));
-                }
-            }
-
-            // feature from current model elements
-            if (smodel->feature_list_id > 0 &&
-                smodel->feature_list_id != first_element->feature_list_id)
-            {
-                for (vector<int>::iterator
-                     f_iter = id_feature_list.at(smodel->feature_list_id).begin();
-                     f_iter != id_feature_list.at(smodel->feature_list_id).end();
-                     ++f_iter)
-                {
-                    morphology->features.push_back(id_short_feature.at(*f_iter));
-                    morphology->descriptions.push_back(id_long_feature.at(*f_iter));
-                }
-            }
-
-            result->push_back(morphology);
         }
     }
 }
 
-void MorphologicalDictionaryBackup::getMorphologyE(const wstring & lower_word,
+void MorphologicalDictionary::getMorphologyE(const wstring & lower_word,
                    shared_ptr<vector<shared_ptr<Morphology> > > result)
 {
+    bool debug = false;
     size_t l = lower_word.length();
     for (size_t i = 0; i < l; ++i)
     {
@@ -1031,18 +956,34 @@ void MorphologicalDictionaryBackup::getMorphologyE(const wstring & lower_word,
             e_word[i] = L'ё';
 
             // get morphology
+            if (debug)
+            {
+                wcout << "E:getMorphologyPo: " << e_word << endl;
+            }
             this->getMorphologyPo(e_word, false, result);
+            if (debug)
+            {
+                wcout << "E:getMorphologyPo: ok" << e_word << endl;
+            }
 
             // "по"
             if (l >= 2 && e_word.at(0) == L'п' && e_word.at(1) == L'о')
             {
+                if (debug)
+                {
+                    wcout << "E:getMorphologyPo:Po: " << e_word << endl;
+                }
                 this->getMorphologyPo(e_word, true, result);
             }
         }
     }
+    if (debug)
+    {
+        wcout << "getMorphologyE >> ok" << endl;
+    }
 }
 
-void MorphologicalDictionaryBackup::getMorphology(const wstring & word,
+void MorphologicalDictionary::getMorphology(const wstring & word,
                               shared_ptr<vector<shared_ptr<Morphology> > > result)
 {
     bool debug = false;
@@ -1083,23 +1024,35 @@ void MorphologicalDictionaryBackup::getMorphology(const wstring & word,
 
     if (useE && e_count > 0 && ee_count == 0)
     {
+        if (debug)
+        {
+            wcout << "E: " << endl;
+        }
         this->getMorphologyE(lower_word, result);
     }
 
     // morphology by rules (English)
     if (useRules)
     {
+        if (debug)
+        {
+            wcout << "Rules (English): " << endl;
+        }
         this->getMorphologicalInfoListByRules(lower_word, result);
     }
 
     // morphology prediction (Russian)
     if (usePrediction && result->empty())
     {
+        if (debug)
+        {
+            wcout << "Prediction (Russian): " << endl;
+        }
         this->getMorphologicalPrediction(lower_word, result);
     }
 }
 
-void MorphologicalDictionaryBackup::getMorphologyOfLemmaId(int lemma_id,
+void MorphologicalDictionary::getMorphologyOfLemmaId(int lemma_id,
                    shared_ptr<vector<shared_ptr<Morphology> > > result)
 {
     bool debug = false;
@@ -1118,8 +1071,6 @@ void MorphologicalDictionaryBackup::getMorphologyOfLemmaId(int lemma_id,
     }
     int model_id = node_model->model_id;
     shared_ptr<MModel> mmodel = mmodels.at(model_id);
-    shared_ptr<MModelElement> first_model_element = *(mmodel->elements.begin());
-    int feature_list_id_of_lemma = first_model_element->feature_list_id;
 
     shared_ptr<MNode> node = node_model->node;
 
@@ -1141,24 +1092,13 @@ void MorphologicalDictionaryBackup::getMorphologyOfLemmaId(int lemma_id,
          m_iter != mmodel->elements.end(); ++m_iter)
     {
         shared_ptr<MModelElement> element = *m_iter;
+        if (element->feature_list_id <= 0)
+        {
+            continue;
+        }
         shared_ptr<Morphology> morphology = std::make_shared<Morphology>();
         morphology->lemma_id = lemma_id;
-        if (useLink)
-        {
-            map<int, int>::iterator l_iter = links.find(lemma_id);
-            if (l_iter != links.end())
-            {
-                morphology->lemma = lemmas.at(l_iter->second);
-            }
-            else
-            {
-                morphology->lemma = lemmas.at(lemma_id);
-            }
-        }
-        else
-        {
-            morphology->lemma = lemmas.at(lemma_id);
-        }
+        morphology->lemma = lemmas.at(lemma_id);
 
         // word
         shared_ptr<wstring> word = make_shared<wstring>();
@@ -1177,64 +1117,331 @@ void MorphologicalDictionaryBackup::getMorphologyOfLemmaId(int lemma_id,
         }
 
         //morphology->features
-
-        // feature from first model elements
-        if (feature_list_id_of_lemma > 0)
+        for (vector<int>::iterator
+             f_iter = id_feature_list.at(element->feature_list_id).begin();
+             f_iter != id_feature_list.at(element->feature_list_id).end();
+             ++f_iter)
         {
-            for (vector<int>::iterator
-                 f_iter = id_feature_list.at(feature_list_id_of_lemma).begin();
-                 f_iter != id_feature_list.at(feature_list_id_of_lemma).end();
-                 ++f_iter)
-            {
-                morphology->features.push_back(id_short_feature.at(*f_iter));
-                morphology->descriptions.push_back(id_long_feature.at(*f_iter));
-            }
-        }
-
-        // feature from current model elements
-        if (element->feature_list_id > 0 &&
-            element->feature_list_id != feature_list_id_of_lemma)
-        {
-            for (vector<int>::iterator
-                 f_iter = id_feature_list.at(element->feature_list_id).begin();
-                 f_iter != id_feature_list.at(element->feature_list_id).end();
-                 ++f_iter)
-            {
-                morphology->features.push_back(id_short_feature.at(*f_iter));
-                morphology->descriptions.push_back(id_long_feature.at(*f_iter));
-            }
+            morphology->features.push_back(id_short_feature.at(*f_iter));
+            morphology->descriptions.push_back(id_long_feature.at(*f_iter));
         }
 
         result->push_back(morphology);
     }
 }
 
-void MorphologicalDictionaryBackup::temp_1()
+void MorphologicalDictionary::writeToBuffer(vector<unsigned char> charVector)
 {
-//    // find model indices
-//    vector<int> model_indices;
-//    for (int model_index = 1; model_index < mmodels.size(); ++model_index)
-//    {
-//        shared_ptr<MModel> mmodel = mmodels.at(model_index);
-//        shared_ptr<MModelElement> first_element = mmodel->elements.at(0);
-//        if (first_element->suffix != L"ло")
-//        {
-//            continue;
-//        }
-//        for (vector<shared_ptr<MModelElement> >::iterator e_iter
-//             = mmodel->elements.begin() + 1; e_iter != mmodel->elements.end(); ++e_iter)
-//        {
-//            shared_ptr<MModelElement> element = *e_iter;
-//            if (element->suffix == L"т")
-//            {
-//                model_indices.push_back(model_index);
-//                wcout << "Model: " << model_index << endl;
-//                break;
-//            }
-//        }
-//    }
+    for (int i = 0; i < (int) charVector.size(); ++i)
+    {
+        buffer[bufferSize] = charVector.at(i);
+        bufferSize++;
+    }
+}
+
+void MorphologicalDictionary::buildBufferFromTextFile(string _filePath)
+{
+    bool debug = true;
+    if (debug)
+    {
+        wcout << "Build buffer from text file..." << endl;
+    }
+    buffer = new unsigned char[100000000];
+    bufferSize = 0;
+    wifstream fi(_filePath.c_str());
+    // set encoding to UTF-8
+#ifdef MSVC
+    fi.imbue(locale(fi.getloc(), new codecvt_utf8<wchar_t>));
+#else
+    //fin.imbue(std::locale("ru_RU.UTF-8"));
+    fi.imbue(std::locale("en_US.UTF-8"));
+#endif
+    wstring line;
+    // Node
+    getline(fi, line);
+    int _number_of_nodes = atoi(tools->wstring2string(line).c_str());
+
+    vector<unsigned char> _binary_number_of_nodes
+            = tools->intToCharVector3(_number_of_nodes);
+    writeToBuffer(_binary_number_of_nodes);
+    for (int i = 0; i < _number_of_nodes; ++i)
+    {
+        getline(fi, line);
+        vector<unsigned char> _binary_node_char;
+        _binary_node_char.push_back(tools->wcharToChar(line.at(0)));
+        writeToBuffer(_binary_node_char);
+        getline(fi, line);
+        int _node_parent_id = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_node_parent_id
+                = tools->intToCharVector3(_node_parent_id);
+        writeToBuffer(_binary_node_parent_id);
+    }
+    if (debug)
+    {
+        wcout << "#build : Node ok: " << _number_of_nodes << endl;
+    }
+
+    // NodeModel
+    getline(fi, line);
+    int _number_of_node_models = atoi(tools->wstring2string(line).c_str());
+    vector<unsigned char> _binary_number_of_node_models
+            = tools->intToCharVector3(_number_of_node_models);
+    writeToBuffer(_binary_number_of_node_models);
+    for (int i = 0; i < _number_of_node_models; ++i)
+    {
+        getline(fi, line);
+        int _model_id = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_model_id = tools->intToCharVector2(_model_id);
+        writeToBuffer(_binary_model_id);
+
+        getline(fi, line);
+        int _lemma_id = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_lemma_id = tools->intToCharVector3(_lemma_id);
+        writeToBuffer(_binary_lemma_id);
+
+        getline(fi, line);
+        int _node_id = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_node_id = tools->intToCharVector3(_node_id);
+        writeToBuffer(_binary_node_id);
+    }
+    if (debug)
+    {
+        wcout << "#build : NodeModel ok: " << _number_of_node_models << endl;
+    }
+
+    // TrieModel
+    getline(fi, line);
+    int _number_of_trie_models = atoi(tools->wstring2string(line).c_str());
+    wcout << "#build: _number_of_trie_models = " << _number_of_trie_models << endl;
+    vector<unsigned char> _binary_number_of_trie_models = tools->intToCharVector2(_number_of_trie_models);
+    writeToBuffer(_binary_number_of_trie_models);
+    for (int i = 1; i <= _number_of_trie_models; ++i)
+    {
+        getline(fi, line);
+        int _number_of_trie_model_elements = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_number_of_trie_model_elements
+                = tools->intToCharVector1(_number_of_trie_model_elements);
+        writeToBuffer(_binary_number_of_trie_model_elements);
+        for (int j = 0; j < _number_of_trie_model_elements; ++j)
+        {
+            // suffix
+            getline(fi, line);
+            int _suffix_length = (int) line.length();
+            vector<unsigned char> _binary_suffix_length
+                    = tools->intToCharVector1(_suffix_length);
+            writeToBuffer(_binary_suffix_length);
+
+            vector<unsigned char> _binary_suffix
+                    = tools->wstringToCharVector(line);
+            writeToBuffer(_binary_suffix);
+
+            // begin with PO
+            getline(fi, line);
+            int _begin_with_po = atoi(tools->wstring2string(line).c_str());
+            vector<unsigned char> _binary_begin_with_po
+                    = tools->intToCharVector1(_begin_with_po);
+            writeToBuffer(_binary_begin_with_po);
+
+            // featureListId
+            getline(fi, line);
+            int _feature_list_id = atoi(tools->wstring2string(line).c_str());
+            vector<unsigned char> _binary_feature_list_id
+                    = tools->intToCharVector2(_feature_list_id);
+            writeToBuffer(_binary_feature_list_id);
+        }
+    }
+    if (debug)
+    {
+        wcout << "#build : TrieModels ok: " << _number_of_trie_models << endl;
+    }
+
+    // Feature lists
+    getline(fi, line);
+    int _number_of_feature_lists
+            = atoi(tools->wstring2string(line).c_str());
+    if (debug)
+    {
+        wcout << "_number_of_feature_lists = " << _number_of_feature_lists << endl;
+    }
+    vector<unsigned char> _binary_number_of_feature_lists
+            = tools->intToCharVector2(_number_of_feature_lists);
+    writeToBuffer(_binary_number_of_feature_lists);
+    for (int i = 0; i < _number_of_feature_lists; ++i)
+    {
+        getline(fi, line);
+        int _number_of_features = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_number_of_features
+                = tools->intToCharVector1(_number_of_features);
+        writeToBuffer(_binary_number_of_features);
+        for (int j = 0; j < _number_of_features; ++j)
+        {
+            getline(fi, line);
+            int _feature_id = atoi(tools->wstring2string(line).c_str());
+            vector<unsigned char> _binary_feature_id
+                    = tools->intToCharVector1(_feature_id);
+            writeToBuffer(_binary_feature_id);
+        }
+    }
+    if (debug)
+    {
+        wcout << "#build : Feature list ok: " << _number_of_feature_lists << endl;
+    }
+
+    // Features map
+    getline(fi, line);
+    int _number_of_features = atoi(tools->wstring2string(line).c_str());
+    vector<unsigned char> _binary_number_of_features
+            = tools->intToCharVector1(_number_of_features);
+    writeToBuffer(_binary_number_of_features);
+    for (int i = 1; i <= _number_of_features; ++i)
+    {
+        // short feature
+        getline(fi, line);
+        int _short_feature_length = (int) line.length();
+        //wcout << line << endl;
+        vector<unsigned char> _short_binary_feature_length
+                = tools->intToCharVector1(_short_feature_length);
+        writeToBuffer(_short_binary_feature_length);
+        vector<unsigned char> _short_binary_feature
+                = tools->wstringToCharVector(line);
+        writeToBuffer(_short_binary_feature);
+
+        // long feature
+        getline(fi, line);
+        int _long_feature_length = (int) line.length();
+        vector<unsigned char> _long_binary_feature_length
+                = tools->intToCharVector1(_long_feature_length);
+        writeToBuffer(_long_binary_feature_length);
+        vector<unsigned char> _long_binary_feature
+                = tools->wstringToCharVector(line);
+        writeToBuffer(_long_binary_feature);
+    }
+    if (debug)
+    {
+        wcout << "#build : Feature Map ok: " << _number_of_features << endl;
+    }
+
+    // SUFFIX: sumber of suffix = 641965
+
+    // Suffix nodes
+    getline(fi, line);
+    // number of nodes <= 188520
+    int _number_of_suffix_nodes = atoi(tools->wstring2string(line).c_str());
+
+    vector<unsigned char> _binary_number_of_suffix_nodes
+            = tools->intToCharVector3(_number_of_suffix_nodes);
+    writeToBuffer(_binary_number_of_suffix_nodes);
+    for (int i = 0; i < _number_of_suffix_nodes; ++i)
+    {
+        // node char
+        getline(fi, line);
+        vector<unsigned char> _binary_node_char;
+        _binary_node_char.push_back(tools->wcharToChar(line.at(0)));
+        writeToBuffer(_binary_node_char);
+        getline(fi, line);
+        // parent id
+        int _suffix_node_parent_id = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_suffix_node_parent_id
+                = tools->intToCharVector3(_suffix_node_parent_id);
+        writeToBuffer(_binary_suffix_node_parent_id);
+
+        // number of node models <= 556
+        getline(fi, line);
+        int _number_of_node_models = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_number_of_node_models
+                = tools->intToCharVector2(_number_of_node_models);
+        writeToBuffer(_binary_number_of_node_models);
+        // node models
+        for (int j = 0; j < _number_of_node_models; ++j)
+        {
+            // suffix model id <= 632527
+            getline(fi, line);
+            int _suffix_model_id = atoi(tools->wstring2string(line).c_str());
+            vector<unsigned char> _binary_suffix_model_id
+                    = tools->intToCharVector3(_suffix_model_id);
+            writeToBuffer(_binary_suffix_model_id);
+        }
+    }
+
+    if (debug)
+    {
+        wcout << "#build : Suffix nodes ok: " << _number_of_suffix_nodes << endl;
+    }
+
+    // number of suffix models = 703729
+    getline(fi, line);
+    int _number_of_suffix_models = atoi(tools->wstring2string(line).c_str());
+    vector<unsigned char> _binary_number_of_suffix_models
+            = tools->intToCharVector3(_number_of_suffix_models);
+    writeToBuffer(_binary_number_of_suffix_models);
+    // suffix models
+    for (int _suffix_model_id = 0;
+         _suffix_model_id < _number_of_suffix_models;
+         ++_suffix_model_id)
+    {
+        //
+        getline(fi, line);
+        int _feature_list_id = atoi(tools->wstring2string(line).c_str());
+        vector<unsigned char> _binary_feature_list_id
+                = tools->intToCharVector2(_feature_list_id);
+        writeToBuffer(_binary_feature_list_id);
+        // lemma suffix
+        getline(fi, line);
+        int _lemma_suffix_length = (int) line.length();
+        vector<unsigned char> _binary_lemma_suffix_length
+                = tools->intToCharVector1(_lemma_suffix_length);
+        writeToBuffer(_binary_lemma_suffix_length);
+
+        vector<unsigned char> _binary_lemma_suffix
+                = tools->wstringToCharVector(line);
+        writeToBuffer(_binary_lemma_suffix);
+    }
+
+    if (debug)
+    {
+        wcout << "#build : Suffix models ok: " << _number_of_suffix_models << endl;
+    }
+
+    fi.close();
+}
+
+void MorphologicalDictionary::writeToBinaryFile(string _filePath)
+{
+    wcout << "Write Trie to binary file ..." << endl;
+    ofstream f(_filePath.c_str(), ios::out|ios::binary);
+    f.write((char *)&buffer[0], bufferSize);
+    f.close();
+    wcout << "Write Trie to binary file done!" << endl;
+}
+
+void MorphologicalDictionary::temp_1()
+{
+    /*
+    // find model indices
+    vector<int> model_indices;
+    for (int model_index = 1; model_index < mmodels.size(); ++model_index)
+    {
+        shared_ptr<MModel> mmodel = mmodels.at(model_index);
+        shared_ptr<MModelElement> first_element = mmodel->elements.at(0);
+        if (first_element->suffix != L"ло")
+        {
+            continue;
+        }
+        for (vector<shared_ptr<MModelElement> >::iterator e_iter
+             = mmodel->elements.begin() + 1; e_iter != mmodel->elements.end(); ++e_iter)
+        {
+            shared_ptr<MModelElement> element = *e_iter;
+            if (element->suffix == L"т")
+            {
+                model_indices.push_back(model_index);
+                wcout << "Model: " << model_index << endl;
+                break;
+            }
+        }
+    }
+    */
     // find lemma IDs
-    for (int lemma_id = 1; lemma_id < lemmaId_MNodeModel.size(); ++lemma_id)
+    for (int lemma_id = 1; lemma_id < (int) lemmaId_MNodeModel.size(); ++lemma_id)
     {
         if (lemmaId_MNodeModel.at(lemma_id) &&
             lemmaId_MNodeModel.at(lemma_id)->model_id == 754)
@@ -1243,4 +1450,3 @@ void MorphologicalDictionaryBackup::temp_1()
         }
     }
 }
-*/

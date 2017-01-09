@@ -37,7 +37,7 @@
 #ifndef _DICTIONARYTRIEITERATOR_H_
 #define _DICTIONARYTRIEITERATOR_H_
 
-#include "DictionaryTrieBinaryFileReader.h"
+#include "DictionaryTrieBinaryFile.h"
 
 /**
  * class DictionaryTrieIterator :

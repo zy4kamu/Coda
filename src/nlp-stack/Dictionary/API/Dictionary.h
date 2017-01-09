@@ -40,9 +40,9 @@
 #include "DictionaryInterface.h"
 #include "DictionaryTools.h"
 #include "DictionaryTrieRebuild.h"
-#include "NGramTrieBinaryFileReader.h"
+#include "NGramTrieBinaryFile.h"
 //#include "NGramTrieBinaryFileCreator.h"
-#include "SuffixModelTrieBinaryFileReader.h"
+#include "SuffixModelTrieBinaryFile.h"
 #include "TestMorphologicalAnalyze.h"
 
 using namespace std;

@@ -12,11 +12,11 @@
 include (../../common_includes.cmake)
 
 include_directories(
+    ${dictionary_subfolders}
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/Clib
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/EventHandler
     ${PROJECT_ROOT_DIR}/algorithms/Optimization/Optimizer
 
-    ${PROJECT_ROOT_DIR}/nlp-stack/Dictionary
     ${PROJECT_ROOT_DIR}/nlp-stack/Disambiguator/Core/Disambiguator
     ${PROJECT_ROOT_DIR}/nlp-stack/Lemmatizer
     ${PROJECT_ROOT_DIR}/nlp-stack/SentenceSplitter/Core

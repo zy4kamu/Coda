@@ -1,6 +1,4 @@
-﻿/**
- * NGramTrieBinaryFileReader.h
- * Class NGramTrieBinaryFileReader
+/**
  *
  * .. invisible:
  *     _   _ _____ _     _____ _____
@@ -32,29 +30,41 @@
  *
  */
 
+#ifndef DICTIONARY_CREATOR
+#define DICTIONARY_CREATOR
 
-//#pragma warning( disable: 4018 4244)
-#ifndef _NGRAMTRIEBINARYFILEREADER_H_
-#define _NGRAMTRIEBINARYFILEREADER_H_
+#include <map>
+#include <memory>
+#include "DictionaryFacade.h"
+#include "Tools.h"
 
-#include "NGramTrie.h"
+using std::map;
+using std::shared_ptr;
 
+namespace DictionaryOps
+{
 /**
- * class NGramTrieBinaryFileReader :
- * load N-Gram from binary file
+ * @class	DictionaryCreator
+ * @brief	Helper standalone class for dictionary management
  */
-class NGramTrieBinaryFileReader : public NGramTrie
+class DictionaryCreator
 {
 public:
-	NGramTrieBinaryFileReader(Dictionary* _dic);
-	~NGramTrieBinaryFileReader(void);
+    static DictionaryCreator& getDictionaryCreator();
+    shared_ptr<DictionaryFacade> getDictionary(Tools::Language i_language);
+    void removeDictionary(Tools::Language i_language);
+    void Register(std::shared_ptr<DictionaryOps::DictionaryFacade> i_toRegister);
 
-	/**
-	 * @brief load n-gram data from binary file
-	 */
-	void loadFromBinaryFile(string _filePath);
-protected:
-	// vector of NGramNode
-	vector<NGramNode*> NGramNodeList;
+private:
+    DictionaryCreator();
+    DictionaryCreator(const DictionaryCreator& i_creator);
+    void operator = (const DictionaryCreator& i_creator);
+    bool isSupported_(Tools::Language i_language);
+
+    map<Tools::Language, shared_ptr<DictionaryOps::DictionaryFacade> > m_dictionaries;
 };
-#endif /* _NGRAMTRIEBINARYFILEREADER_H_ */
+
+}
+
+#endif // DICTIONARY_CREATOR
+

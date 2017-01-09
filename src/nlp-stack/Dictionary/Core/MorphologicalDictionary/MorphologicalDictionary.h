@@ -125,6 +125,11 @@ public:
     // check morphological prediction: европарламент -> европарламенло
     void temp_1();
 
+    const map<wstring, wstring>& getShortToLongMap() const
+    {
+        return short_to_long_;
+    }
+
 protected:
     // TRIE
     shared_ptr<MNode> root;
@@ -139,6 +144,7 @@ protected:
     vector<vector<int> > id_feature_list;
     vector<shared_ptr<wstring> > id_short_feature;
     vector<shared_ptr<wstring> > id_long_feature;
+    map<wstring, wstring> short_to_long_;
 
     // tools
     shared_ptr<DictionaryTools> tools;

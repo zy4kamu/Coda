@@ -1,6 +1,6 @@
 ﻿/**
- * NGramTrieBinaryFileCreator.h
- * Class NGramTrieBinaryFileCreator
+ * SuffixModelTrieBinaryFileCreator.h
+ * Class SuffixModelTrieBinaryFileCreator
  *
  * .. invisible:
  *     _   _ _____ _     _____ _____
@@ -34,23 +34,30 @@
 
 
 //#pragma warning( disable: 4018 )
-#ifndef _NGRAMTRIEBINARYFILECREATOR_H_
-#define _NGRAMTRIEBINARYFILECREATOR_H_
+#ifndef _SUFFIXMODELTRIEBINARYFILE_H_
+#define _SUFFIXMODELTRIEBINARYFILE_H_
 
-#include "NGramTrieBuild.h"
+#include "SuffixModelTrieBuild.h"
+
+using namespace std;
 
 /**
- * class NGramTrieBinaryFileCreator :
- * save N-Gram to binary file
+ * class SuffixModelTrieBinaryFileCreator for searching featureListId for suffix of a non-dictionary word
+ * save to binary file
  */
-class NGramTrieBinaryFileCreator : public NGramTrieBuild
+
+class SuffixModelTrieBinaryFileCreator : public SuffixModelTrieBuild
 {
 public:
-	NGramTrieBinaryFileCreator(Dictionary* _dic);
-	~NGramTrieBinaryFileCreator(void);
-
+	SuffixModelTrieBinaryFileCreator(Dictionary* _dic);
+	~SuffixModelTrieBinaryFileCreator(void);
+	
 	/**
-	 * @brief write a vector of char to buffer
+	 * @brief convert SuffixModelNode and its parentId to vector<char>
+	 */
+    vector<unsigned char> binarySuffixModelNode(SuffixModelNode * _node, int _parentId);
+	/**
+	 * @brief write to buffer
 	 */
     void writeToBuffer(vector<unsigned char> charVector);
 	/**
@@ -66,5 +73,29 @@ protected:
     unsigned char *buffer;
 	// size of buffer
 	int bufferSize;
+
+	int max_frequency_size;
+	int max_frequency;
+	int max_feature_frequency;
 };
-#endif /* _NGRAMTRIEBINARYFILECREATOR_H_ */
+
+/**
+ * class SuffixModelTrieBinaryFileReader for searching featureListId for suffix of a non-dictionary word
+ * load from binary file
+ */
+
+class SuffixModelTrieBinaryFileReader : public SuffixModelTrie
+{
+public:
+    SuffixModelTrieBinaryFileReader(Dictionary* _dic);
+    ~SuffixModelTrieBinaryFileReader(void);
+
+    /**
+     * @brief load from binary file
+     */
+    void loadFromBinaryFile(string _filePath);
+protected:
+    vector<SuffixModelNode*> SuffixModelNodeList;
+};
+
+#endif /* _SUFFIXMODELTRIEBINARYFILE_H_ */
