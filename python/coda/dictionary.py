@@ -37,11 +37,24 @@ def initialize():
 
 
 class MorphologicalInformation:
+    '''
+    Morphological Information. A simple structure for storing morphological infomation: lemma and OpenCorpora tags.
+    '''
     def __init__(self):
         self.lemma = None
         self.features = []
 
 class Dictionary:
+    '''
+    Dictionary class. Provides basic dictionary functions: morphological analysis and synthesis
+    Basic format is OpenCorpora
+
+    Parameters
+    ----------
+
+    language : str
+        Language used for disambiguation (RU, EN, ...)
+    '''
     def __init__(self, language):
         initialize()
         self.dictionary_lib = dicitonry_lib
@@ -49,6 +62,19 @@ class Dictionary:
         self.language = language
 
     def morphological_information(self, word):
+        '''
+        Morphological analysis for input token
+
+
+        Parameters
+        ----------
+        word (unicode): word to analyze
+
+
+        Returns
+        -------
+        out : list of structures MorphologicalInformation: lemma and feature tags (OpenCorpora tagset)
+        '''
         number_of_variants = self.dictionary_lib.getGramInfo(word, self.language)
         variants = []
         for i in range(number_of_variants):
@@ -63,6 +89,19 @@ class Dictionary:
         return variants
 
     def synthesize_wordform(self, lemma, features):
+        '''
+        Get correct wordform based for given lemma and morphological features
+
+
+        Parameters
+        ----------
+        lemma (unicode): word to analyze
+        features (list of unicode strings): OpenCorpora morphological tags
+
+        Returns
+        -------
+        out : list of unicode strings. Correct wordforms for given lemma and features
+        '''
         lemma = lemma.lower()
         ffi_feature_list = []
         for feature in features:
