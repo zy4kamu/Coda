@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import cffi, os, unittest, time
+import common
 
 dicitonry_lib = None
 ffi = None
@@ -30,9 +31,8 @@ def initialize():
     ffi.cdef(src)
 
     # Loadself.features = {}
-    build_path = '/opt/coda/lib'
 
-    full_path = os.path.join(build_path, 'libdictionary.so')
+    full_path = os.path.join(common.build_path, 'libdictionary.so')
     dicitonry_lib = ffi.dlopen(full_path)
 
 
