@@ -25,6 +25,8 @@ wstring TokenizerRus::replaceSpecialSymbols(const wstring& sentence) const
     replaced = Tools::Replace(replaced, L"—", L"-");
     replaced = Tools::Replace(replaced, L"–", L"-");
     replaced = Tools::Replace(replaced, L"…", L".");
+    replaced = Tools::Replace(replaced, L"\n", L" ");
+    replaced = Tools::Replace(replaced, L"\t", L" ");
     replaced = Tools::Replace(replaced, L"№", L"\u043d\u043e\u043c\u0435\u0440 ");//here was cyrrilic symbols: номер
     return replaced;
 }
