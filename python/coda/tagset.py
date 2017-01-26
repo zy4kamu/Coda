@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+import unittest
 import tagset_constants as tc
 
 
@@ -44,8 +45,8 @@ class Syntagrus2OpenCorpora(object):
         self.mapping_[tc.STR_PAST] = tc.OC_PAST
         self.mapping_[tc.STR_PRES] = tc.OC_PRES
 
-        self.mapping_[tc.OC_IMPERF] = tc.OC_IMPERF
-        self.mapping_[tc.OC_PERF] = tc.OC_PERF
+        self.mapping_[tc.STR_IMPERF] = tc.OC_IMPERF
+        self.mapping_[tc.STR_PERF] = tc.OC_PERF
 
         self.mapping_[tc.STR_1PER] = tc.OC_1PER
         self.mapping_[tc.STR_2PER] = tc.OC_2PER
@@ -55,16 +56,16 @@ class Syntagrus2OpenCorpora(object):
         self.regs_.append(re.compile(ur'V.+?ПРИЧ.+КР'))
         self.regs_.append(re.compile(ur'V.+?ПРИЧ'))
         self.regs_.append(re.compile(ur'V.+?ДЕЕПР'))
-        self.regs_.append(re.compile(ur'V'))
         self.regs_.append(re.compile(ur'V.+?ИНФ'))
+        self.regs_.append(re.compile(ur'V'))
         self.regs_.append(re.compile(ur'СРАВ'))
         self.regs_.append(re.compile(ur'ADV'))
         self.regs_.append(re.compile(ur'A.+?КР'))
+        self.regs_.append(re.compile(ur'PART'))
         self.regs_.append(re.compile(ur'A'))
         self.regs_.append(re.compile(ur'NUM'))
         self.regs_.append(re.compile(ur'PR'))
         self.regs_.append(re.compile(ur'CONJ'))
-        self.regs_.append(re.compile(ur'PART'))
         self.regs_.append(re.compile(ur'INTJ'))
         self.regs_.append(re.compile(ur'S'))
 
@@ -77,11 +78,11 @@ class Syntagrus2OpenCorpora(object):
         self.processors_.append(self.process_cmp_)
         self.processors_.append(self.process_adv_)
         self.processors_.append(self.process_adjs_)
+        self.processors_.append(self.process_part_)
         self.processors_.append(self.process_adjf_)
         self.processors_.append(self.process_num_)
         self.processors_.append(self.process_pr_)
         self.processors_.append(self.process_conj_)
-        self.processors_.append(self.process_part_)
         self.processors_.append(self.process_intj_)
         self.processors_.append(self.process_noun_)
 
@@ -98,7 +99,7 @@ class Syntagrus2OpenCorpora(object):
         '''
         tag = tag.strip()
         for reg, processor in self.manager_:
-            if reg.find(tag) is not None:
+            if reg.search(tag) is not None:
                 return processor(tag)
         raise ValueError('unknown tag %s' % tag)
 
@@ -141,12 +142,12 @@ class Syntagrus2OpenCorpora(object):
         markers = tag.split('@')
         oc_markers.append(tc.OC_VERB)
         markers = markers[1:]
-        oc_markers += [self.mapping_[marker] for marker in markers if marker in self.mapping_ and marker not in tc.OC_TENSE]
+        oc_markers += [self.mapping_[marker] for marker in markers if marker in self.mapping_ and marker not in tc.STR_TENSE]
         if tc.STR_PASV not in markers:
             oc_markers.append(tc.OC_ACTV)
-        if tag.find(tc.STR_PRES):
+        if tag.find(tc.STR_PRES) != -1:
             oc_markers.append(tc.OC_PRES)
-        elif tag.find(tc.STR_PAST):
+        elif tag.find(tc.STR_PAST) != -1:
             oc_markers.append(tc.OC_PAST)
         elif self.reg_fut_.search(tag) is not None:
             oc_markers.append(tc.OC_FUTR)
@@ -199,3 +200,14 @@ class Syntagrus2OpenCorpora(object):
     def process_noun_(self, tag):
         markers = tag.split('@')
         return [self.mapping_[marker] for marker in markers if marker in self.mapping_]
+
+class TagsetConverterTest(unittest.TestCase):
+    def test_syntagrus_to_opencorpora(self):
+        tags = [u'S@МН@МУЖ@ИМ@НЕОД', u'S@ЕД@МУЖ@РОД@ОД', u'PART', u'S@ЕД@МУЖ@ИМ@НЕОД', u'V@СОВ@ИЗЪЯВ@ПРОШ@МН',
+                u'A@ЕД@ЖЕН@РОД', u'V@НЕСОВ@ДЕЕПР@НЕПРОШ', u'V@НЕСОВ@ПРИЧ@НЕПРОШ@МН@РОД', u'A@МН@РОД']
+        str2oc = Syntagrus2OpenCorpora()
+        for tag in tags:
+            print tag, ': ', str2oc.convert_syntagrus_tag_to_opencorpora(tag)
+
+if __name__ == '__main__':
+    unittest.main()
