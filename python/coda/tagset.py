@@ -112,8 +112,6 @@ class Syntagrus2OpenCorpora(object):
 
     def process_verb_form_(self, markers):
         result = [self.mapping_[marker] for marker in markers if marker in self.mapping_]
-        if tc.STR_PASV not in markers:
-            result.append(tc.OC_ACTV)
         return result
 
     def process_prtf_(self, tag):
