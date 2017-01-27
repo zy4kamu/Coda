@@ -18,12 +18,6 @@ include_directories(
     ${PROJECT_ROOT_DIR}/utils/Tools
  )
 
-if (MSVC)
-    add_definitions(-DCONFIG_PATH="${PROJECT_ROOT_DIR}/utils/TagsetConverter/Config_Windows/")
-elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-    add_definitions(-DCONFIG_PATH=\"${PROJECT_ROOT_DIR}/utils/TagsetConverter/Config_Linux/\")
-endif()
-
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
 target_link_libraries(${project_name} tools file-manager)
 

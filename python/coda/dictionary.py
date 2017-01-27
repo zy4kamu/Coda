@@ -3,12 +3,12 @@
 import cffi, os, unittest, time
 import common
 
-dicitonary_lib = None
+dictionary_lib = None
 ffi = None
 
 
 def initialize():
-    global dicitonary_lib
+    global dictionary_lib
     src = """
     typedef struct
     {
@@ -33,7 +33,7 @@ def initialize():
     # Loadself.features = {}
 
     full_path = os.path.join(common.build_path, 'libdictionary.so')
-    dicitonry_lib = ffi.dlopen(full_path)
+    dictionary_lib = ffi.dlopen(full_path)
 
 
 class MorphologicalInformation:
@@ -57,7 +57,7 @@ class Dictionary:
     '''
     def __init__(self, language):
         initialize()
-        self.dictionary_lib = dicitonary_lib
+        self.dictionary_lib = dictionary_lib
         self.dictionary_lib.createDictionary(language)
         self.language = language
 
