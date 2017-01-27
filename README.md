@@ -18,6 +18,8 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 * *python* version 2.7
 * *graphviz* (to create .dot files for trees).
 * *okular* (to visualize pdf files with trees).
+* *language-pack-ru-base* (for Russian language support)
+* *cffi* version >= 1.9
 
 ### INSTALLATION
 1. *sudo bash build_cpp.sh* 
