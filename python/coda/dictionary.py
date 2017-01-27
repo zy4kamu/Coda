@@ -131,6 +131,11 @@ class DictionaryTest(unittest.TestCase):
         dictionary = Dictionary("RU")
         test_variant = dictionary.synthesize_wordform(test_word, [u"NOUN", u"inan", u"femn", u"sing", u"Sgtm", u"gent", u"Geox"])[0]
         print "Synthesized variant: {}".format(test_variant.encode('utf-8'))
+        print "----Testing wordform synthesis. Set word 'пригрозить' into 'пригрозил' --"
+        test_word = u"пригрозить"
+        dictionary = Dictionary("RU")
+        test_variant = dictionary.synthesize_wordform(test_word, [u'VERB', u'perf', u'sing', u'masc', u'indc', u'past'])[0]
+        print "Synthesized variant: {}".format(test_variant.encode('utf-8'))
 
     def test_morphological_info(self):
         print "----Test morphological info. Testing word 'России'-------------------"

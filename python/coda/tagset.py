@@ -143,8 +143,8 @@ class Syntagrus2OpenCorpora(object):
         oc_markers.append(tc.OC_VERB)
         markers = markers[1:]
         oc_markers += [self.mapping_[marker] for marker in markers if marker in self.mapping_ and marker not in tc.STR_TENSE]
-        if tc.STR_PASV not in markers:
-            oc_markers.append(tc.OC_ACTV)
+        if tc.STR_IMPR not in markers:
+            oc_markers.append(tc.OC_INDIC)
         if tag.find(tc.STR_PRES) != -1:
             oc_markers.append(tc.OC_PRES)
         elif tag.find(tc.STR_PAST) != -1:
