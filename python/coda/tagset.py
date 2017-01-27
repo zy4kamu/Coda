@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-import unittest
+import unittest, cffi
 import tagset_constants as tc
 
 
@@ -198,6 +198,12 @@ class Syntagrus2OpenCorpora(object):
     def process_noun_(self, tag):
         markers = tag.split('@')
         return [self.mapping_[marker] for marker in markers if marker in self.mapping_]
+
+
+class OpenCorpora2SyntagRus(object):
+    def __init__(self):
+        pass
+
 
 class TagsetConverterTest(unittest.TestCase):
     def test_syntagrus_to_opencorpora(self):

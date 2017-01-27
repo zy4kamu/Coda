@@ -3,12 +3,12 @@
 import cffi, os, unittest, time
 import common
 
-dicitonry_lib = None
+dicitonary_lib = None
 ffi = None
 
 
 def initialize():
-    global dicitonry_lib
+    global dicitonary_lib
     src = """
     typedef struct
     {
@@ -57,7 +57,7 @@ class Dictionary:
     '''
     def __init__(self, language):
         initialize()
-        self.dictionary_lib = dicitonry_lib
+        self.dictionary_lib = dicitonary_lib
         self.dictionary_lib.createDictionary(language)
         self.language = language
 
