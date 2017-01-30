@@ -16,10 +16,11 @@ set(project_name tagset-converter)
 include_directories(
     ${PROJECT_ROOT_DIR}/utils/FileManager
     ${PROJECT_ROOT_DIR}/utils/Tools
+    ${dictionary_subfolders}
  )
 
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-target_link_libraries(${project_name} tools file-manager)
+target_link_libraries(${project_name} tools file-manager dictionary)
 
 add_executable(${project_name}-app main.cpp)
 target_link_libraries(${project_name}-app ${project_name})
