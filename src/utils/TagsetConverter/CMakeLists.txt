@@ -16,16 +16,11 @@ set(project_name tagset-converter)
 include_directories(
     ${PROJECT_ROOT_DIR}/utils/FileManager
     ${PROJECT_ROOT_DIR}/utils/Tools
+    ${dictionary_subfolders}
  )
 
-if (MSVC)
-    add_definitions(-DCONFIG_PATH="${PROJECT_ROOT_DIR}/utils/TagsetConverter/Config_Windows/")
-elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-    add_definitions(-DCONFIG_PATH=\"${PROJECT_ROOT_DIR}/utils/TagsetConverter/Config_Linux/\")
-endif()
-
 add_library(${project_name} ${LIBRARY_TYPE} ${sources} ${headers})
-target_link_libraries(${project_name} tools file-manager)
+target_link_libraries(${project_name} tools file-manager dictionary)
 
 add_executable(${project_name}-app main.cpp)
 target_link_libraries(${project_name}-app ${project_name})

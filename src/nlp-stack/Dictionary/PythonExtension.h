@@ -29,7 +29,7 @@ size_t getGramInfo(const wchar_t* i_token, const char * i_language);
 size_t synthesizeTokenFromLemma(const wchar_t* i_lemma, const wchar_t ** i_grammarFeatures, size_t i_numberOfFeatures, const char* i_language);
 
 
-/* GETTING RESULTS FROM PYTHON */
+/* GETTING RESULTS FOR PYTHON */
 const MorphologyWrapper* requestGetGramInfoReturnValue(size_t i_index);
 const wchar_t* requestSynthesizeTokenFromLemmaReturnValue(size_t i_index);
 

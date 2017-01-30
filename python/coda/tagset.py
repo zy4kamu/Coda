@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import re
+import os
+import common
 import unittest
+import cffi
 import tagset_constants as tc
 
 
@@ -8,6 +11,10 @@ class Syntagrus2OpenCorpora(object):
     '''
     Syntagrus2OpenCorpora class
     Converts SynTagRus tag in lemmatizer output format into a list of OpenCorpora grammar markers
+
+    Parameters
+    ----------
+
     '''
     def __init__(self):
         self.mapping_ = {}
@@ -199,13 +206,81 @@ class Syntagrus2OpenCorpora(object):
         markers = tag.split('@')
         return [self.mapping_[marker] for marker in markers if marker in self.mapping_]
 
+
+tagset_converter_lib = None
+ffi = None
+
+
+def initialize():
+    global tagset_converter_lib
+    src = """
+    void createConverter();
+    size_t convert(const wchar_t ** i_markers, size_t i_numberOfFeatures);
+    void removeConverter();
+    const wchar_t* requestConvertReturnValue(size_t i_index);
+    """
+    # Parse
+    global ffi
+    ffi = cffi.FFI()
+    ffi.cdef(src)
+
+    # Loadself.features = {}
+
+    full_path = os.path.join(common.build_path, 'libtagset-converter.so')
+    tagset_converter_lib = ffi.dlopen(full_path)
+
+
+class OpenCorpora2Syntagrus(object):
+    '''
+    OpenCorpora2SyntagRus class
+    Converts OpenCorpora tag list into lemmatizer output format
+
+    Parameters
+    ----------
+
+    '''
+    def __init__(self):
+        initialize()
+        self.converter_lib = tagset_converter_lib
+        self.converter_lib.createConverter()
+
+    def __del__(self):
+        self.converter_lib.removeConverter()
+
+    def convert_opencorpora_tag_to_syntagrus(self, markers):
+        '''
+        converts OpenCorpora markers into SynTagRus tag in pos@gram1@gram2....@gramN format
+        input: list of unicode strings - OpenCorpora markers
+        output: unicode string - syntagrus tag pos@gram1@gram2....@gramN
+        '''
+        ffi_markers_list = []
+        for feature in markers:
+            ffi_markers_list.append(ffi.new("wchar_t[]", feature))
+        ffi_markers = ffi.new("wchar_t *[]", ffi_markers_list)
+        number_of_variants = self.converter_lib.convert(ffi_markers, len(markers))
+        variants = []
+        for i in range(number_of_variants):
+            variant = self.converter_lib.requestConvertReturnValue(i)
+            variants.append(ffi.string(variant))
+        return variants
+
+
 class TagsetConverterTest(unittest.TestCase):
     def test_syntagrus_to_opencorpora(self):
+        print '-----Test tag conversion SynTagRus->OpenCorpora-------------'
         tags = [u'S@МН@МУЖ@ИМ@НЕОД', u'S@ЕД@МУЖ@РОД@ОД', u'PART', u'S@ЕД@МУЖ@ИМ@НЕОД', u'V@СОВ@ИЗЪЯВ@ПРОШ@МН',
                 u'A@ЕД@ЖЕН@РОД', u'V@НЕСОВ@ДЕЕПР@НЕПРОШ', u'V@НЕСОВ@ПРИЧ@НЕПРОШ@МН@РОД', u'A@МН@РОД']
         str2oc = Syntagrus2OpenCorpora()
         for tag in tags:
             print tag, ': ', str2oc.convert_syntagrus_tag_to_opencorpora(tag)
+
+    def test_open_corpora_to_syntagrus(self):
+        print '-----Test tag conversion OpenCorpora->SynTagRus-------------'
+        oc2str = OpenCorpora2Syntagrus()
+        oc_markers = [u'NOUN', u'inan', u'femn', u'sing', u'Sgtm', u'gent', u'Geox']
+        str_tags = oc2str.convert_opencorpora_tag_to_syntagrus(oc_markers)
+        for tag in str_tags:
+            print tag
 
 if __name__ == '__main__':
     unittest.main()
