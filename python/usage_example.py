@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+# uncomment in order to use version for c++ debugging
+# import coda.common
+# coda.common.set_debug_mode()
+
 from coda.tokenizer import Tokenizer
 from coda.disambiguator import Disambiguator
 from coda.syntax_parser import SyntaxParser

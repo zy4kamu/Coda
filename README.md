@@ -24,11 +24,13 @@ Python and C++ realization of NLP stack for **Russian** and **English** language
 ### INSTALLATION
 1. *sudo bash build_cpp.sh* 
     + This script builds C++ part of application and puts libraries, execution files and configs to */opt/coda*
-2. *bash install_python.sh*
+2. *sudo bash build_cpp.sh -d* 
+    + This step is optional. The script builds C++ part of application and puts libraries and execution files to */opt/coda/debug*
+3. *bash install_python.sh*
     + This script installs Python wrapper .egg over C++ to corresponding site_packages folder)
 
 ### USAGE EXAMPLE
-* Try: *python coda/python/usage_example.py*
+* Try: *python Coda/python/usage_example.py*
 
 * usage_example.py content:
 ```python 

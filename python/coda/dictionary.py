@@ -32,7 +32,7 @@ def initialize():
 
     # Loadself.features = {}
 
-    full_path = os.path.join(common.build_path, 'libdictionary.so')
+    full_path = os.path.join(common.get_build_path(), 'libdictionary.so')
     dictionary_lib = ffi.dlopen(full_path)
 
 
