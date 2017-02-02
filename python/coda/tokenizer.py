@@ -52,22 +52,26 @@ class Tokenizer(object):
         size = func(sentence, self.language)
         tokens = []
         for token_index in range(size):
+            print("Ready")
             content = self.__request_content_from_cpp(token_index)
-            punctuation_size = self.__request_punct_size_from_cpp(token_index)
-            punctuation = []
-            for punct_index in range(punctuation_size):
-                punct = self.__request_punctuation_from_cpp(
-                    token_index, punct_index)
-                punctuation.append(punct)
-            token = Token()
-            token.content = content
-            token.punctuation = punctuation
-            tokens.append(token)
+            print("OK!")
+            # punctuation_size = self.__request_punct_size_from_cpp(token_index)
+            # punctuation = []
+            # for punct_index in range(punctuation_size):
+            #     punct = self.__request_punctuation_from_cpp(
+            #         token_index, punct_index)
+            #     punctuation.append(punct)
+            # token = Token()
+            # token.content = content
+            # token.punctuation = punctuation
+            # tokens.append(token)
         return tokens
 
     def __request_content_from_cpp(self, token_index):
         func = tokenizer_lib.RequestContent
         func.res_type = ctypes.c_wchar_p
+        print(U"" + ctypes.c_wchar_p(func(token_index)).value)
+        return U""
         content = ctypes.c_wchar_p(func(token_index)).value
         return content
 

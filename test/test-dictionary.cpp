@@ -26,7 +26,7 @@ protected:
 
 TEST_F (TestDictionary, TestMorphologicalInfoRus)
 {
-    vector<Morphology> morphology_list = m_dictRus->getMorphologicalInformation(L"России");
+    vector<Morphology> morphology_list = m_dictRus->getMorphologicalInformation(L"Россия");
     EXPECT_EQ(1, morphology_list.size());
     Morphology morphology = morphology_list[0];
     EXPECT_STREQ(L"NOUN", morphology.features[0]->c_str());

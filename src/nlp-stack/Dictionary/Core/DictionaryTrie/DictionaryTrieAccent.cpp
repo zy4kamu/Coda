@@ -473,6 +473,7 @@ void DictionaryTrieAccent::loadStressInFormationFromBinaryFile(string filePath)
 			// add to stressModelId
 			stressModelId.push_back(stress_model_id);
 		}
+        delete[] buffer;
 	}
 	else 
 	{

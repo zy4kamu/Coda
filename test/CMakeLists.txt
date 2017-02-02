@@ -22,7 +22,7 @@ set(unit_test_INCLUDE_DIR ${PROJECT_INCLUDE_DIR})
 
 set(unit_test_SOURCES
     ${unit_test_SOURCE_DIR}/google-test/src/gtest_main.cc
-    ${unit_test_SOURCE_DIR}/test-dictionary.cpp
+    #${unit_test_SOURCE_DIR}/test-dictionary.cpp
     ${unit_test_SOURCE_DIR}/test_dict_tokenizer.cpp
 )
 
@@ -33,12 +33,17 @@ include_directories(
     ${unit_test_SOURCE_DIR}/google-test
     ${unit_test_SOURCE_DIR}/google-test/gtest
     ${dictionary_subfolders}
+    ${disambiguator_subfolders}
+    ${crf_subfolders}
+    ${tokenizer_subfolders}
     ${PROJECT_ROOT_DIR}/utils/Tools
     ${PROJECT_ROOT_DIR}/utils/Tools/Exceptions
+    ${PROJECT_ROOT_DIR}/utils/FileManager
+    ${PROJECT_ROOT_DIR}/utils/TagsetConverter
 )
 
 
 add_executable(${TARGET_NAME} ${unit_test_HEADERS} ${unit_test_SOURCES})
 
-target_link_libraries(${TARGET_NAME} google-test dictionary) # tools crf dictionary disambiguation regexptools tagsetconstants)
+target_link_libraries(${TARGET_NAME} google-test tools dictionary tokenizer disambiguator crf)
 
