@@ -1,8 +1,26 @@
 # -*- coding: utf-8 -*-
-import ctypes, os, unittest, time
+import cffi, os, unittest, time
 import common
 
-tokenizer_lib = common.load_library('tokenizer')
+tokenizer_lib = None #common.load_library('tokenizer')
+ffi = None
+
+def initialize():
+    global tokenizer_lib
+    src = """
+    void createTokenizer(const char* languagePtr);
+    size_t tokenize(const wchar_t* sentencePtr, const char* languagePtr);
+    const wchar_t* requestContent(size_t index);
+    size_t requestPunctuationSize(size_t index);
+    const wchar_t* requestPunctuation(size_t tokenIndex, size_t punctIndex);
+    """
+    # Parse
+    global ffi
+    ffi = cffi.FFI()
+    ffi.cdef(src)
+
+    full_path = os.path.join(common.get_build_path(), 'libtokenizer.so')
+    tokenizer_lib = ffi.dlopen(full_path)
 
 class Token(object):
     '''
@@ -31,7 +49,9 @@ class Tokenizer(object):
         Language used for tokenization (RU, EN, ...)
     '''
     def __init__(self, language):
-        tokenizer_lib.CreateTokenizer(language)
+        initialize()
+        self.tokenizer_lib = tokenizer_lib
+        self.tokenizer_lib.createTokenizer(language)
         self.language = language
 
     def tokenize(self, sentence):
@@ -47,12 +67,12 @@ class Tokenizer(object):
         -------
         out: list of Tokens
         '''
-        func = tokenizer_lib.Tokenize
-        func.res_type = ctypes.c_size_t
-        size = func(sentence, self.language)
+        number_of_tokens = self.tokenizer_lib.tokenize(sentence, self.language)
         tokens = []
-        for token_index in range(size):
+        for token_index in range(number_of_tokens):
+            #print("Ready")
             content = self.__request_content_from_cpp(token_index)
+            #print("OK!")
             punctuation_size = self.__request_punct_size_from_cpp(token_index)
             punctuation = []
             for punct_index in range(punctuation_size):
@@ -66,21 +86,17 @@ class Tokenizer(object):
         return tokens
 
     def __request_content_from_cpp(self, token_index):
-        func = tokenizer_lib.RequestContent
-        func.res_type = ctypes.c_wchar_p
-        content = ctypes.c_wchar_p(func(token_index)).value
+        content_ptr = tokenizer_lib.requestContent(token_index)
+        content = ffi.string(content_ptr)
         return content
 
     def __request_punct_size_from_cpp(self, token_index):
-        func = tokenizer_lib.RequestPunctuationSize
-        func.res_type = ctypes.c_size_t
-        size = ctypes.c_size_t(func(token_index)).value
+        size = self.tokenizer_lib.requestPunctuationSize(token_index)
         return size
 
     def __request_punctuation_from_cpp(self, token_index, punct_index):
-        func = tokenizer_lib.RequestPunctuation
-        func.res_type = ctypes.c_wchar_p
-        punctuation = ctypes.c_wchar_p(func(token_index, punct_index)).value
+        punct_ptr = tokenizer_lib.requestContent(token_index, punct_index)
+        punctuation = ffi.string(punct_ptr)
         return punctuation
 
 class TokenizationTest(unittest.TestCase):

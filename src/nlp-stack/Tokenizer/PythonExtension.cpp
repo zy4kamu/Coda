@@ -8,7 +8,7 @@ extern "C"
 namespace Tokenization
 {
 
-void CreateTokenizer(const char* languagePtr)
+void createTokenizer(const char* languagePtr)
 {
     Tools::Language language = Tools::StringToLanguage(languagePtr);
     shared_ptr<ITokenizer> tokenizer = ITokenizer::GetTokenizer(language);
@@ -18,7 +18,7 @@ void CreateTokenizer(const char* languagePtr)
 
 vector<Token> currentTokens;
 
-size_t Tokenize(const wchar_t* sentencePtr, const char* languagePtr)
+size_t tokenize(const wchar_t* sentencePtr, const char* languagePtr)
 {
     Tools::Language language = Tools::StringToLanguage(languagePtr);
     shared_ptr<ITokenizer> tokenizer = ITokenizer::GetTokenizer(language);
@@ -26,17 +26,18 @@ size_t Tokenize(const wchar_t* sentencePtr, const char* languagePtr)
     return currentTokens.size();
 }
 
-const wchar_t* RequestContent(size_t index)
+const wchar_t* requestContent(size_t index)
 {
-    return currentTokens[index].content.c_str();
+    const wchar_t *s = currentTokens[index].content.c_str();
+    return s;
 }
 
-size_t RequestPunctuationSize(size_t index)
+size_t requestPunctuationSize(size_t index)
 {
     return currentTokens[index].punctuation.size();
 }
 
-const wchar_t* RequestPunctuation(size_t tokenIndex, size_t punctIndex)
+const wchar_t* requestPunctuation(size_t tokenIndex, size_t punctIndex)
 {
     return currentTokens[tokenIndex].punctuation[punctIndex].c_str();
 }
@@ -50,13 +51,13 @@ void ResetParsedTokens()
     parsedTokens.clear();
 }
 
-void PushParsedContent(const wchar_t* content)
+void pushParsedContent(const wchar_t* content)
 {
     parsedTokens.emplace_back();
     parsedTokens.back().content = content;
 }
 
-void PushParsedPunctuation(const wchar_t* punctuation)
+void pushParsedPunctuation(const wchar_t* punctuation)
 {
     parsedTokens.back().punctuation.push_back(punctuation);
 }
