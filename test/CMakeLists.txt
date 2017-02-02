@@ -23,6 +23,7 @@ set(unit_test_INCLUDE_DIR ${PROJECT_INCLUDE_DIR})
 set(unit_test_SOURCES
     ${unit_test_SOURCE_DIR}/google-test/src/gtest_main.cc
     ${unit_test_SOURCE_DIR}/test-dictionary.cpp
+    ${unit_test_SOURCE_DIR}/test_dict_tokenizer.cpp
 )
 
 set(unit_test_HEADERS
