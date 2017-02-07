@@ -13,6 +13,9 @@ def initialize():
     const wchar_t* requestContent(size_t index);
     size_t requestPunctuationSize(size_t index);
     const wchar_t* requestPunctuation(size_t tokenIndex, size_t punctIndex);
+    void resetParsedTokens();
+    void pushParsedContent(const wchar_t* content);
+    void pushParsedPunctuation(const wchar_t* punctuation);
     """
     # Parse
     global ffi
@@ -32,11 +35,11 @@ class Token(object):
         self.punctuation = []
 
 def push_tokens_to_cpp(tokens):
-    tokenizer_lib.ResetParsedTokens()
+    tokenizer_lib.resetParsedTokens()
     for token in tokens:
-        tokenizer_lib.PushParsedContent(token.content)
+        tokenizer_lib.pushParsedContent(token.content)
         for punct in token.punctuation:
-            tokenizer_lib.PushParsedPunctuation(punct)
+            tokenizer_lib.pushParsedPunctuation(punct)
 
 class Tokenizer(object):
     '''
@@ -95,7 +98,7 @@ class Tokenizer(object):
         return size
 
     def __request_punctuation_from_cpp(self, token_index, punct_index):
-        punct_ptr = tokenizer_lib.requestContent(token_index, punct_index)
+        punct_ptr = tokenizer_lib.requestPunctuation(token_index, punct_index)
         punctuation = ffi.string(punct_ptr)
         return punctuation
 

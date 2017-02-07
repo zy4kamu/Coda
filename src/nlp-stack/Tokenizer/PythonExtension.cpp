@@ -46,7 +46,7 @@ const wchar_t* requestPunctuation(size_t tokenIndex, size_t punctIndex)
 
 vector<Token> parsedTokens;
 
-void ResetParsedTokens()
+void resetParsedTokens()
 {
     parsedTokens.clear();
 }
