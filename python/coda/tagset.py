@@ -226,7 +226,7 @@ def initialize():
 
     # Loadself.features = {}
 
-    full_path = os.path.join(common.build_path, 'libtagset-converter.so')
+    full_path = os.path.join(common.get_build_path(), 'libtagset-converter.so')
     tagset_converter_lib = ffi.dlopen(full_path)
 
 
