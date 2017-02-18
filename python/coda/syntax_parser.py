@@ -1,8 +1,23 @@
  # -*- coding: utf-8 -*-
-import ctypes, os, unittest, time
+import unittest, time
 import tokenizer, disambiguator, common
 
-syntax_parser_lib = common.load_library('syntax-parser')
+src = '''
+/* FUNCTIONS RELATED TO SYNTAX PARSER */
+
+void CreateSyntaxParser(const char* languagePtr);
+void SyntaxParse(const char* languagePtr);
+int GetRootIndex();
+const wchar_t* GetSentence();
+int GetParentIndex(size_t tokenIndex);
+void Draw(const char* outputFile, bool openPDF);
+
+/* FUNCTION RELATED TO PARSING PYTHON INPUT */
+
+void CreateTreeFromParsedDisambiguated();
+void SetParent(int nodeIndex, int parentIndex);
+'''
+ffi, syntax_parser_lib = common.load_cffi_library(src, 'syntax-parser')
 
 class SyntaxNode(disambiguator.DisambiguatedData):
     '''
@@ -111,30 +126,12 @@ class SyntaxParser(object):
         for index, item in enumerate(disambiguated):
             syntax_node = SyntaxNode()
             syntax_node.index = index
-            syntax_node.parent_index = self.__request_parent_index(index)
+            syntax_node.parent_index = syntax_parser_lib.GetParentIndex(index)
             syntax_node.get_info_from_morphology(item)
             tree.nodes.append(syntax_node)
-        tree.root_index = self.__request_root_index()
-        tree.sentence = self.__request_sentence()
+        tree.root_index = syntax_parser_lib.GetRootIndex()
+        tree.sentence = ffi.string(syntax_parser_lib.GetSentence())
         return tree
-
-    def __request_parent_index(self, index):
-        func = syntax_parser_lib.GetParentIndex
-        func.restype = ctypes.c_int
-        parent_index = ctypes.c_int(func(index)).value
-        return parent_index
-
-    def __request_root_index(self):
-        func = syntax_parser_lib.GetRootIndex
-        func.restype = ctypes.c_int
-        root_index = ctypes.c_int(func()).value
-        return root_index
-
-    def __request_sentence(self):
-        func = syntax_parser_lib.GetSentence
-        func.restype = ctypes.c_wchar_p
-        sentence = ctypes.c_wchar_p(func()).value
-        return sentence
 
 class SyntaxParserTest(unittest.TestCase):
     def test_time_creation(self):

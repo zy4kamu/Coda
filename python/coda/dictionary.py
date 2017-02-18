@@ -38,7 +38,7 @@ def initialize():
 
 class MorphologicalInformation:
     '''
-    Morphological Information. A simple structure for storing morphological infomation: lemma and OpenCorpora tags.
+    Morphological Information. A simple structure for storing morphological information: lemma and OpenCorpora tags.
     '''
     def __init__(self):
         self.lemma = None
