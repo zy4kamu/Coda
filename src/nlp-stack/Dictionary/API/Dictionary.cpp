@@ -3,6 +3,7 @@
  */
 
 #include "Dictionary.h"
+#include <algorithm>
 
 /**
  * Constructor of interface
@@ -551,3 +552,29 @@ wstring Dictionary::getLemmaOfLemmaId(int lemmaId)
     }
     return result;
 }
+
+bool compare_by_lemma_id(const WordInfo& first, const WordInfo& second)
+{
+    return first.lemmaId < second.lemmaId;
+}
+
+void Dictionary::getParadigmsForLemma(const wstring lemma, vector<vector<GrammInfo>>& result)
+{
+    result.clear();
+
+    vector<WordInfo> variants = getWordInfo(lemma);
+    std::sort(variants.begin(), variants.end(), &compare_by_lemma_id);
+    int prevLemmaId = -1;
+    for(auto iter = variants.begin(); iter != variants.end(); iter++) {
+        if(iter->lemmaId == prevLemmaId) {
+            continue;
+        }
+        prevLemmaId = iter->lemmaId;
+        shared_ptr<vector<GrammInfo>> paradigm = shared_ptr<vector<GrammInfo>>(new vector<GrammInfo>);
+        getGrammInfoOfLemmaId(iter->lemmaId, paradigm);
+        if(!paradigm->empty() && (*paradigm)[0].initial_form.compare(lemma) == 0) {
+            result.push_back(*paradigm.get());
+        }
+    }
+}
+

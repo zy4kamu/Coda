@@ -836,3 +836,5 @@ bool DictionaryTools::isSuffix(const wstring & s1, const wstring & s2)
     }
     return true;
 }
+
+

@@ -109,6 +109,13 @@ public:
 	 */
 	virtual void setMainWordFormFromLinkedLemmas(bool _mainWordFormFromLinkedLemmas) = 0;
 
+    /**
+     * @brief returns the whole paradigm of the given lemma
+     * @param [in] lemma : word in initial form
+     * @return list of possible wordforms
+     */
+    virtual void getParadigmsForLemma(const wstring lemma, vector<vector<GrammInfo>>& result) = 0;
+
     virtual DictionaryTrieRebuild* getDictionaryTrie(void) = 0;
     virtual void setDictionaryLevel(int _dicLevel) = 0;
     virtual void enableRules(bool _useRules) = 0;

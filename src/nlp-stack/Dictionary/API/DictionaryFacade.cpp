@@ -38,6 +38,7 @@
 
 using std::make_shared;
 
+
 namespace DictionaryOps
 {
 
@@ -81,7 +82,7 @@ vector<wstring> DictionaryFacade::synthesizeWordform(const wstring& i_lemma, vec
     auto& featureNameMap = m_morphologicalDictionary->getShortToLongMap();
     if(featureNameMap.find(i_features[0]) != featureNameMap.end())
     {
-        for(int i = 0; i < i_features.size(); ++i)
+        for(size_t i = 0; i < i_features.size(); ++i)
         {
             i_features[i] = featureNameMap.at(i_features[i]);
         }
@@ -95,10 +96,48 @@ vector<wstring> DictionaryFacade::synthesizeWordform(const wstring& i_lemma, vec
     return tokens;
 }
 
+vector<vector<Morphology>> DictionaryFacade::getParadigmForLemma(const wstring& i_lemma) const
+{
+    vector<vector<GrammInfo>> paradigms;
+    m_dicInterface->getParadigmsForLemma(i_lemma, paradigms);
+
+    vector<vector<Morphology>> result;
+    for(size_t i = 0; i < paradigms.size(); i++) {
+        vector<GrammInfo>& source_paradigm = paradigms[i];
+        vector<Morphology> target_paradigm;
+        for(size_t wordform = 0; wordform < source_paradigm.size(); wordform++) {
+            target_paradigm.push_back(convertToMorphology(source_paradigm[wordform]));
+        }
+        result.push_back(target_paradigm);
+    }
+    return result;
+}
+
 Tools::Language DictionaryFacade::getLanguage() const
 {
     return m_language;
 }
 
+//////////////////////////////////////////////////////////////////
+// simple data type converters
+//////////////////////////////////////////////////////////////////
+
+/**
+ * GramInfo to Morphology conversion
+ */
+
+Morphology DictionaryFacade::convertToMorphology(GrammInfo& gram_info) const
+{
+    Morphology morphology;
+
+    morphology.lemma_id = gram_info.id;
+    morphology.lemma = shared_ptr<wstring>( new wstring(gram_info.initial_form));
+    morphology.word = shared_ptr<wstring>( new wstring(gram_info.word));
+    for(size_t i = 0; i < gram_info.fid.size(); i++) {
+        morphology.features.push_back(m_morphologicalDictionary->open_corpora_feature(gram_info.fid[i]));
+    }
+
+    return morphology;
 }
 
+}

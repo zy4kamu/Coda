@@ -85,6 +85,13 @@ public:
     vector<wstring> synthesizeWordform(const wstring& i_lemma, vector<wstring>& i_morphology) const;
 
     /**
+     * @brief	Returns full paradigms for given lemma. Implemented only for Russian
+     * @param[in]	i_lemma - lemma/normal form
+     * @param[out]	paradigms - list of paradigms, each paradigm is a list of possible wordforms with morphological information
+     */
+    vector<vector<Morphology>> getParadigmForLemma(const wstring& i_lemma) const;
+
+    /**
      * @brief	Returns language code
      * @param[out]	language - language code
      */
@@ -94,6 +101,8 @@ private:
     DictionaryInterface* m_dicInterface;
     shared_ptr<MorphologicalDictionary> m_morphologicalDictionary;
     Tools::Language m_language;
+
+    Morphology convertToMorphology(GrammInfo& gram_info) const;
 };
 
 }

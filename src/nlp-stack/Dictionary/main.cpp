@@ -20,5 +20,7 @@ int main(int argc, char *argv[])
     wcout << nParses;
     const wchar_t* features[8]{L"VERB", L"perf", L"sing", L"masc", L"past", L"indc", L"intr"};
     DictionaryOps::synthesizeTokenFromLemma(L"пригрозить", features, 7, "RU");
+
+    DictionaryOps::getParadigmForLemma(L"пригрозить", "RU");
 	return 0;
 }

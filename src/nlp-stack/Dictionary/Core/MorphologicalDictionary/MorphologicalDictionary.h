@@ -130,6 +130,8 @@ public:
         return short_to_long_;
     }
 
+    shared_ptr<wstring> open_corpora_feature(int id) const { return id_short_feature[id]; }
+
 protected:
     // TRIE
     shared_ptr<MNode> root;

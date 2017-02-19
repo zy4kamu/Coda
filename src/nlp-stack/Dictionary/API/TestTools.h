@@ -190,6 +190,34 @@ void testSomeWord(const wstring & _word)
     wcout << endl;
 }
 
+void testParadigmOfLemma(DictionaryInterface* dict, wstring word)
+{
+    wcout << L"#### PARADIGM TEST ####" << endl;
+    wcout << L"============ " << word << L" ==================" << endl;
+    vector<vector<GrammInfo>> result;
+    dict->getParadigmsForLemma(word, result);
+    wcout << L"Found paradigms:" << endl;
+    for(size_t i = 0; i < result.size(); i++) {
+        wcout << L"\t" << result[i][0].initial_form << L" " << result[i].size() << endl;
+    }
+    for(size_t i = 0; i < result.size(); i++) {
+        for(size_t wordform = 0; wordform < result[i].size(); wordform++) {
+            wcout << result[i][wordform].word << L" " << result[i][wordform].initial_form << L" " << result[i][wordform].id << L" ";
+            for(size_t feature = 0; feature < result[i][wordform].features.size(); feature++) {
+                wcout << result[i][wordform].features[feature];
+                if(feature < result[i][wordform].features.size()-1) {
+                    wcout << L"@";
+                } else {
+                    wcout << endl;
+                }
+            }
+        }
+
+        wcout << endl;
+    }
+    wcout << endl;
+}
+
 void testDictionary(void)
 {
     wcout << "###### testDictionary ######" << endl << endl;
@@ -269,9 +297,19 @@ void testDictionary(void)
 //    testSomeWord(L"Путин");
 //    testSomeWord(L"мыла");
 //    testSomeWord(L"вокруг");
-    testSomeWord(L"капитан-командора");
+//    testSomeWord(L"капитан-командора");
 //    testSomeWord(L"все-таки");
-    testSomeWord(L"кроолик");
+//    testSomeWord(L"кроолик");
+    //testSomeWord(L"синейший");
+    testSomeWord(L"посинее");
+    //testSomeWord(L"сижу");
+    //testSomeWord(L"сидел");
+    //testSomeWord(L"сидевший");
+
+    testParadigmOfLemma(dicInterface, L"под");
+    testParadigmOfLemma(dicInterface, L"синий");
+    testParadigmOfLemma(dicInterface, L"сидеть");
+
     delete dicInterface;
 }
 

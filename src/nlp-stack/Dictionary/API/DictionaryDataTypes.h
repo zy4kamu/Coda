@@ -135,6 +135,7 @@ struct Morphology
     vector<shared_ptr<wstring> > descriptions;
     // suffix - prediction
     size_t suffix_length;
+
 };
 
 /**
@@ -150,7 +151,7 @@ struct GrammInfo
     wstring initial_form;
     // list of features : VERB, NOUN,...
 	vector<wstring> features;
-	vector<wstring> fid;
+    vector<int> fid;
 };
 
 /**
