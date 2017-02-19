@@ -469,7 +469,7 @@ void DictionaryTrie::convertMorphologicalInfoToGrammInfo(MorphologicalInfo * min
     ginfo->id = minfo->lemmaId;
     ginfo->initial_form = minfo->initial_form;
     vector<wstring> _features;
-    vector<wstring> _FID;
+    vector<int> _FID;
     if (minfo->basicFeatureListId != -1 && featureListMap.count(minfo->basicFeatureListId) > 0)
     {
         vector<int> * _featuresList = &featureListMap.at(minfo->basicFeatureListId);
@@ -479,10 +479,7 @@ void DictionaryTrie::convertMorphologicalInfoToGrammInfo(MorphologicalInfo * min
             {
                 _features.push_back(featureMap.at(*iter));
             }
-            if (idFeatureMap.count(*iter) > 0)
-            {
-                _FID.push_back(idFeatureMap.at(*iter));
-            }
+            _FID.push_back(*iter);
         }
     }
     if (featureListMap.count(minfo->featureListId) > 0)
@@ -494,16 +491,11 @@ void DictionaryTrie::convertMorphologicalInfoToGrammInfo(MorphologicalInfo * min
             {
                 _features.push_back(featureMap.at(*iter));
             }
-            if (idFeatureMap.count(*iter) > 0)
-            {
-                _FID.push_back(idFeatureMap.at(*iter));
-            }
+            _FID.push_back(*iter);
         }
     }
-//    ginfo.features = _features;
-//    ginfo.fid = _FID;
-    ginfo->features = _FID;
-    ginfo->fid = _features;
+    ginfo->features = _features;
+    ginfo->fid = _FID;
 }
 
 /**
@@ -596,6 +588,13 @@ void DictionaryTrie::getMorphologicalInfoListOfLemmaId(int lemmaId, shared_ptr<v
         return;
     }
     DictionaryNodeModel* _nodeModel = nodeModelMap.at(lemmaId);
+    if(mainWordFormFromLinkedLemmas) {
+        DictionaryNodeModel* prev_node = _nodeModel;
+        while(prev_node != 0) {
+            _nodeModel = prev_node;
+            prev_node = prev_node->getLink();
+        }
+    }
     wstring _prefix = _nodeModel->getNode()->getStringFromRoot();
     // get modelId of NodeModel
     int _trieModelId = _nodeModel->getModelId();
@@ -608,6 +607,7 @@ void DictionaryTrie::getMorphologicalInfoListOfLemmaId(int lemmaId, shared_ptr<v
 
     // get list of TrieModelElement of TrieModel
     vector<DictionaryTrieModelElement*> * _trieModelElements = _trieModel->getDictionaryTrieModelElements();
+
     // continue if _trieModelElements is empty
     if (_trieModelElements->empty()) {
         return;
@@ -616,25 +616,12 @@ void DictionaryTrie::getMorphologicalInfoListOfLemmaId(int lemmaId, shared_ptr<v
     wstring basicForm = L"";
     // get first TrieModelElement
     DictionaryTrieModelElement* _firstTrieModelElement = _trieModelElements->at(0);
+    // for some parts of speech, initial form is duplcated. We will check and maybe remove it.
+    size_t initialFormIndex = result->size();
+    bool initialFormIsDuplicated = false;
 
-    // get link of NodeModel
-    DictionaryNodeModel* _linkNode = _nodeModel->getLink();
-    // if NodeModel has a link
-    if (_linkNode && mainWordFormFromLinkedLemmas) {
-        // get string from root to link node
-        wstring _link_prefix = _linkNode->getStringFromRoot();
-        // get link TrieModel
-        DictionaryTrieModel *_linkTrieModel = getTrieModelByModelId(_linkNode->getModelId());
-        // get first TrieModelElement
-        DictionaryTrieModelElement* _firstLinkTrieModelElement = _linkTrieModel->getFirstDictionaryTrieModelElement();
-        // get basic form
-        basicForm = _link_prefix;
-        basicForm.append(*(_firstLinkTrieModelElement->getSuffix()));
-    } else { // node does not have a link or not using link
-        // get basic form
-        basicForm = _prefix;
-        basicForm.append(*(_firstTrieModelElement->getSuffix()));
-    }
+    basicForm = _prefix;
+    basicForm.append(*(_firstTrieModelElement->getSuffix()));
 
     // TrieModelElements
     for (vector<DictionaryTrieModelElement*>::iterator i_model_element = _trieModelElements->begin();
@@ -664,6 +651,10 @@ void DictionaryTrie::getMorphologicalInfoListOfLemmaId(int lemmaId, shared_ptr<v
         if (_morphologicalInfo.featureListId == _morphologicalInfo.basicFeatureListId)
         {
             _morphologicalInfo.featureListId = 0;
+        } else {
+            if(word.compare(basicForm) == 0) {
+                initialFormIsDuplicated = true;
+            }
         }
         // frequency
         _morphologicalInfo.frequency = -1;
@@ -671,6 +662,16 @@ void DictionaryTrie::getMorphologicalInfoListOfLemmaId(int lemmaId, shared_ptr<v
         // add _morphologicalInfo to result
         result->push_back(_morphologicalInfo);
     }
+    if(initialFormIsDuplicated) {
+        result->erase(result->begin() + initialFormIndex);
+    }
+    bool mainWordFormFromLinkedLemmasActual = mainWordFormFromLinkedLemmas;
+    mainWordFormFromLinkedLemmas = false;
+    vector<DictionaryNodeModel*> children = _nodeModel->getLinkFrom();
+    for(size_t i = 0; i < children.size(); i++) {
+        getMorphologicalInfoListOfLemmaId(children[i]->getLemmaId(), result);
+    }
+    mainWordFormFromLinkedLemmas = mainWordFormFromLinkedLemmasActual;
 }
 
 void DictionaryTrie::readRulesFromTextFile(const string& filePath)

@@ -153,6 +153,7 @@ public:
     //wstring char2wchar(char c);
     //wstring string2wstring(string _str);
     bool isSuffix(const wstring & s1, const wstring & s2);
+
 private:
 	Dictionary* dic;
 	// alpha for modifications, only russian alphabet

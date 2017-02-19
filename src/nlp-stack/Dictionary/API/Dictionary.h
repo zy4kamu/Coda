@@ -172,7 +172,7 @@ public:
     /**
      * @brief get lemma of lemmaId
      * @param [in] lemmaId : lemmaId that need morphological analyze
-     * @return a vector of struct GrammInfo
+     * @return lemma
      */
     wstring getLemmaOfLemmaId(int lemmaId);
 
@@ -181,6 +181,13 @@ public:
     {
         trie->enableRules(_useRules);
     }
+
+    /**
+     * @brief returns the whole paradigm of the given lemma
+     * @param [in] lemma : word in initial form
+     * @return list of possible wordforms
+     */
+    void getParadigmsForLemma(const wstring lemma, vector<vector<GrammInfo>>& result);
 
 protected:
     DictionaryTrieRebuild* trie;

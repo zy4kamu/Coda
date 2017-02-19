@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 import cffi, os, unittest, time
 import common
 
@@ -19,11 +20,16 @@ def initialize():
 
     void createDictionary(const char*  i_language);
     size_t getGramInfo(const wchar_t* i_token, const char * i_language);
+    size_t getParadigmForLemma(const wchar_t* i_lemma, const char* i_language);
     const MorphologyWrapper* requestGetGramInfoReturnValue(size_t i_index);
+    const size_t requestGetParadigmForLemmaSize(size_t i_index);
+    const MorphologyWrapper* requestGetParadigmForLemmaReturnValueMorphology(size_t i_paradigm_index, size_t i_element_index);
+    const wchar_t* requestGetParadigmForLemmaReturnValueWordform(size_t i_paradigm_index, size_t i_element_index);
     void cleanGetGramInfoReturnValue();
     size_t synthesizeTokenFromLemma(const wchar_t* i_lemma, const wchar_t ** i_grammarFeatures, size_t i_numberOfFeatures, const char* i_language);
     const wchar_t* requestSynthesizeTokenFromLemmaReturnValue(size_t i_index);
     void cleanSynthesizeTokenFromLemmaReturnValue();
+    void cleanGetParadigmForLemmaReturnValue();
     """
     # Parse
     global ffi
@@ -33,6 +39,7 @@ def initialize():
     # Loadself.features = {}
 
     full_path = os.path.join(common.get_build_path(), 'libdictionary.so')
+
     dictionary_lib = ffi.dlopen(full_path)
 
 
@@ -43,6 +50,14 @@ class MorphologicalInformation:
     def __init__(self):
         self.lemma = None
         self.features = []
+    
+    def init_from_c_ptr(self, morphology_ptr):
+        self.lemma = ffi.string(morphology_ptr.lemma)
+        self.features = []
+        number_of_features = morphology_ptr.nFeatures
+        for feature_id in range(number_of_features):
+            self.features.append(ffi.string(morphology_ptr.features[feature_id]))
+	    
 
 class Dictionary:
     '''
@@ -80,11 +95,9 @@ class Dictionary:
         for i in range(number_of_variants):
             morphology_ptr = self.dictionary_lib.requestGetGramInfoReturnValue(i)
             morphology = MorphologicalInformation()
-            morphology.lemma = ffi.string(morphology_ptr.lemma)
-            number_of_features = morphology_ptr.nFeatures
-            for feature_id in range(number_of_features):
-                morphology.features.append(ffi.string(morphology_ptr.features[feature_id]))
-            variants.append(morphology)
+	    morphology.init_from_c_ptr(morphology_ptr)
+	    variants.append(morphology)
+            
         self.dictionary_lib.cleanGetGramInfoReturnValue()
         return variants
 
@@ -115,11 +128,44 @@ class Dictionary:
         self.dictionary_lib.cleanSynthesizeTokenFromLemmaReturnValue()
         return variants
 
+    def get_paradigms(self, lemma):
+        '''
+        Get full paradigms for lemma
+
+
+        Parameters
+        ----------
+        lemma (unicode): word in initial form
+
+        Returns
+        -------
+        out : list of paradigms. Each paradigm is the dictionary of wordforms with their MorphologicalInformation structures (OpenCorpora tagset)
+        '''
+        lemma = lemma.lower()
+        number_of_paradigms = self.dictionary_lib.getParadigmForLemma(lemma, self.language)
+        paradigms = []
+        for i in range(number_of_paradigms):
+            number_of_elements = self.dictionary_lib.requestGetParadigmForLemmaSize(i)
+            new_paradigm = {}
+            for j in range(number_of_elements):
+                morphology_ptr = self.dictionary_lib.requestGetParadigmForLemmaReturnValueMorphology(i, j)
+                morphology = MorphologicalInformation()
+                morphology.init_from_c_ptr(morphology_ptr)
+                word = ffi.string(self.dictionary_lib.requestGetParadigmForLemmaReturnValueWordform(i, j))
+                if word in new_paradigm:
+                    new_paradigm[word].append(morphology)
+                else:
+                    new_paradigm[word] = [morphology]
+            paradigms.append(new_paradigm)
+
+            self.dictionary_lib.cleanGetParadigmForLemmaReturnValue()
+            return paradigms
+
+
 
 class DictionaryTest(unittest.TestCase):
     def test_time_creation(self):
         print '----------------------------------------------------------------------'
-        dictionary = Dictionary("RU")
         start_time = time.time()
         dictionary = Dictionary("RU")
         spent_time = time.time() - start_time
@@ -147,6 +193,20 @@ class DictionaryTest(unittest.TestCase):
             print "Lemma: {}".format(variant.lemma.encode('utf-8'))
             print "Features: ", variant.features
 
+    def test_paradigm(self):
+        print "----Test paradigm. Testing word 'Россия'-------------------"
+        test_word = u"Россия"
+        dictionary = Dictionary("RU")
+        paradigms = dictionary.get_paradigms(test_word)
+        print "Number of paradigms: {}".format(len(paradigms))
+        number = 0
+        for paradigm in paradigms:
+	    print "=====Paradigm {}====".format(number)
+        number+=1
+        for word in paradigm:
+            print "{} :".format(word.encode('utf-8'))
+            for element in paradigm[word]:
+                print "\t{} {}".format(element.lemma.encode('utf-8'), element.features)
 
 if __name__ == '__main__':
     unittest.main()
