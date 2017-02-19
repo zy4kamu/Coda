@@ -1,29 +1,24 @@
 # -*- coding: utf-8 -*-
-import cffi, os, unittest, time
+import unittest, time
 import common
 
-tokenizer_lib = None #common.load_library('tokenizer')
-ffi = None
+src = '''
+void CreateTokenizer(const char* languagePtr);
 
-def initialize():
-    global tokenizer_lib
-    src = """
-    void createTokenizer(const char* languagePtr);
-    size_t tokenize(const wchar_t* sentencePtr, const char* languagePtr);
-    const wchar_t* requestContent(size_t index);
-    size_t requestPunctuationSize(size_t index);
-    const wchar_t* requestPunctuation(size_t tokenIndex, size_t punctIndex);
-    void resetParsedTokens();
-    void pushParsedContent(const wchar_t* content);
-    void pushParsedPunctuation(const wchar_t* punctuation);
-    """
-    # Parse
-    global ffi
-    ffi = cffi.FFI()
-    ffi.cdef(src)
+/* FUNCTIONS RELATED TO TOKENIZATION */
 
-    full_path = os.path.join(common.get_build_path(), 'libtokenizer.so')
-    tokenizer_lib = ffi.dlopen(full_path)
+size_t Tokenize(const wchar_t* sentencePtr, const char* languagePtr);
+const wchar_t* RequestContent(size_t index);
+size_t RequestPunctuationSize(size_t index);
+const wchar_t* RequestPunctuation(size_t tokenIndex, size_t punctIndex);
+
+/* FUNCTION RELATED TO PARSING PYTHON INPUT */
+
+void ResetParsedTokens();
+void PushParsedContent(const wchar_t* content);
+void PushParsedPunctuation(const wchar_t* punctuation);
+'''
+ffi, tokenizer_lib = common.load_cffi_library(src, 'tokenizer')
 
 class Token(object):
     '''
@@ -35,11 +30,11 @@ class Token(object):
         self.punctuation = []
 
 def push_tokens_to_cpp(tokens):
-    tokenizer_lib.resetParsedTokens()
+    tokenizer_lib.ResetParsedTokens()
     for token in tokens:
-        tokenizer_lib.pushParsedContent(token.content)
+        tokenizer_lib.PushParsedContent(token.content)
         for punct in token.punctuation:
-            tokenizer_lib.pushParsedPunctuation(punct)
+            tokenizer_lib.PushParsedPunctuation(punct)
 
 class Tokenizer(object):
     '''
@@ -52,9 +47,7 @@ class Tokenizer(object):
         Language used for tokenization (RU, EN, ...)
     '''
     def __init__(self, language):
-        initialize()
-        self.tokenizer_lib = tokenizer_lib
-        self.tokenizer_lib.createTokenizer(language)
+        tokenizer_lib.CreateTokenizer(language)
         self.language = language
 
     def tokenize(self, sentence):
@@ -70,37 +63,21 @@ class Tokenizer(object):
         -------
         out: list of Tokens
         '''
-        number_of_tokens = self.tokenizer_lib.tokenize(sentence, self.language)
+        size = tokenizer_lib.Tokenize(sentence, self.language)
         tokens = []
-        for token_index in range(number_of_tokens):
-            #print("Ready")
-            content = self.__request_content_from_cpp(token_index)
-            #print("OK!")
-            punctuation_size = self.__request_punct_size_from_cpp(token_index)
+        for token_index in range(size):
+            content = ffi.string(tokenizer_lib.RequestContent(token_index))
+            punctuation_size = tokenizer_lib.RequestPunctuationSize(token_index)
             punctuation = []
             for punct_index in range(punctuation_size):
-                punct = self.__request_punctuation_from_cpp(
-                    token_index, punct_index)
+                punct = ffi.string(tokenizer_lib.RequestPunctuation(
+                    token_index, punct_index))
                 punctuation.append(punct)
             token = Token()
             token.content = content
             token.punctuation = punctuation
             tokens.append(token)
         return tokens
-
-    def __request_content_from_cpp(self, token_index):
-        content_ptr = tokenizer_lib.requestContent(token_index)
-        content = ffi.string(content_ptr)
-        return content
-
-    def __request_punct_size_from_cpp(self, token_index):
-        size = self.tokenizer_lib.requestPunctuationSize(token_index)
-        return size
-
-    def __request_punctuation_from_cpp(self, token_index, punct_index):
-        punct_ptr = tokenizer_lib.requestPunctuation(token_index, punct_index)
-        punctuation = ffi.string(punct_ptr)
-        return punctuation
 
 class TokenizationTest(unittest.TestCase):
     def test_tokenize(self):

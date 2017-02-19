@@ -1,8 +1,30 @@
 # -*- coding: utf-8 -*-
-import ctypes, os, unittest, time
+import unittest, time
 import tokenizer, common
 
-disambiguator_lib = common.load_library('disambiguator')
+src = '''
+/* FUNCTIONS RELATED TO DISAMBIGUATION */
+
+void CreateDisambiguator(const char* languagePtr);
+void Disambiguate(const char* languagePtr);
+void DisambiguateHypothesis(const char* languagePtr, size_t numberOfHypothesis);
+void DisambiguateCoverage(const char* languagePtr, double coverage, size_t maxNumberOfPaths);
+size_t RequestNumberOfHypothesis();
+double RequestHypothesisProbability(size_t hypothesisIndex);
+const wchar_t* RequestLemma(size_t hypothesisIndex, size_t tokenIndex);
+const wchar_t* RequestLabel(size_t hypothesisIndex, size_t tokenIndex);
+double RequestWeight(size_t hypothesisIndex, size_t tokenIndex);
+int RequestLemmaId(size_t hypothesisIndex, size_t tokenIndex);
+
+/* FUNCTIONS RELATED TO PARSING PYTHON INPUT */
+
+void PushParsedDisambiguated(const wchar_t* content
+    , const wchar_t* lemma, const wchar_t* label
+    , double weight, int lemmaId);
+void PushParsedDisambiguatedPunctuation(const wchar_t* punctuation);
+void ResetParsedDisambiguated();
+'''
+ffi, disambiguator_lib = common.load_cffi_library(src, 'disambiguator')
 
 class DisambiguatedData(tokenizer.Token):
     '''
@@ -27,8 +49,7 @@ def push_disambiguated_to_cpp(disambiguated):
     for item in disambiguated:
         disambiguator_lib.PushParsedDisambiguated(
             item.content, item.lemma, item.label,
-            ctypes.c_double(item.weight), 
-            ctypes.c_int(item.lemma_id))
+            item.weight, item.lemma_id)
         for punct in item.punctuation:
             disambiguator_lib.PushParsedDisambiguatedPunctuation(punct)
 
@@ -91,74 +112,32 @@ class Disambiguator(object):
             else:
                 disambiguator_lib.DisambiguateCoverage(
                     self.language,
-                    ctypes.c_double(coverage_percent),
-                    ctypes.c_size_t(max_number_of_hypothesis))
+                    coverage_percent,
+                    max_number_of_hypothesis)
         elif coverage_percent is None:
             disambiguator_lib.DisambiguateHypothesis(
-                self.language, 
-                ctypes.c_size_t(num_hypothesis)) 
+                self.language,
+                num_hypothesis)
         else:
             raise ValueError("Either num_hypothesis or coverage_percent must be None")
         return self.__request_result_from_cpp(tokens)
 
     def __request_result_from_cpp(self, tokens):
-        number_of_hypothesis = self.__request_number_of_hypothesis()
+        number_of_hypothesis = disambiguator_lib.RequestNumberOfHypothesis()
         hypothesis = []
         for hyp_index in range(number_of_hypothesis):
             disambiguated = []
             for token_index in range(len(tokens)):
                 item = DisambiguatedData()
                 item.get_info_from_token(tokens[token_index])
-                item.lemma = self.__request_lemma_from_cpp(hyp_index, token_index)
-                item.label = self.__request_label_from_cpp(hyp_index, token_index)
-                item.weight = self.__request_weight_from_cpp(hyp_index, token_index)
-                item.lemma_id = self.__request_lemma_id_from_cpp(hyp_index, token_index)
+                item.lemma = ffi.string(disambiguator_lib.RequestLemma(hyp_index, token_index))
+                item.label = ffi.string(disambiguator_lib.RequestLabel(hyp_index, token_index))
+                item.weight = disambiguator_lib.RequestWeight(hyp_index, token_index)
+                item.lemma_id = disambiguator_lib.RequestLemmaId(hyp_index, token_index)
                 disambiguated.append(item)
-            probability = self.__request_hypothesis_probability(hyp_index)
+            probability = disambiguator_lib.RequestHypothesisProbability(hyp_index)
             hypothesis.append((disambiguated, probability))
         return hypothesis
-
-    def __request_number_of_hypothesis(self):
-        func = disambiguator_lib.RequestNumberOfHypothesis
-        func.restype = ctypes.c_size_t
-        content = ctypes.c_size_t(
-            func()).value
-        return content
-
-    def __request_hypothesis_probability(self, hypothesis_index):
-        func = disambiguator_lib.RequestHypothesisProbability
-        func.restype = ctypes.c_double
-        content = ctypes.c_double(
-            func(ctypes.c_size_t(hypothesis_index))).value
-        return content
-
-    def __request_lemma_from_cpp(self, hypothesis_index, token_index):
-        func = disambiguator_lib.RequestLemma
-        func.restype = ctypes.c_wchar_p
-        content = ctypes.c_wchar_p(
-            func(hypothesis_index, token_index)).value
-        return content
-
-    def __request_label_from_cpp(self, hypothesis_index, token_index):
-        func = disambiguator_lib.RequestLabel
-        func.restype = ctypes.c_wchar_p
-        content = ctypes.c_wchar_p(
-            func(hypothesis_index, token_index)).value
-        return content
-
-    def __request_weight_from_cpp(self, hypothesis_index, token_index):
-        func = disambiguator_lib.RequestLabel
-        func.restype = ctypes.c_double
-        content = ctypes.c_double(
-            func(hypothesis_index, token_index)).value
-        return content
-
-    def __request_lemma_id_from_cpp(self, hypothesis_index, token_index):
-        func = disambiguator_lib.RequestLemmaId
-        func.restype = ctypes.c_int
-        content = ctypes.c_int(
-            func(hypothesis_index, token_index)).value
-        return content
 
 ''' Tests '''
 
