@@ -8,7 +8,7 @@ extern "C"
 namespace DictionaryOps
 {
 
-void createDictionary(const char * i_language)
+void CreateDictionary(const char * i_language)
 {
     Tools::Language language = Tools::StringToLanguage(i_language);
     DictionaryCreator::getDictionaryCreator().getDictionary(language);
@@ -19,7 +19,7 @@ vector<wstring> synthesizeTokenFromLemmaReturnValue;
 vector<vector<Morphology>> getParadigmForLemmaReturnValue;
 MorphologyWrapper* io_val = 0;
 
-size_t getGramInfo(const wchar_t* i_token, const char * i_language)
+size_t GetGramInfo(const wchar_t* i_token, const char * i_language)
 {
    getGramInfoReturnValue.clear();
    Tools::Language language = Tools::StringToLanguage(i_language);
@@ -28,7 +28,7 @@ size_t getGramInfo(const wchar_t* i_token, const char * i_language)
    return getGramInfoReturnValue.size();
 }
 
-size_t synthesizeTokenFromLemma(const wchar_t* i_lemma, const wchar_t ** i_grammarFeatures,
+size_t SynthesizeTokenFromLemma(const wchar_t* i_lemma, const wchar_t ** i_grammarFeatures,
                                 size_t i_numberOfFeatures, const char* i_language)
 {
     std::vector<wstring> features;
@@ -42,7 +42,7 @@ size_t synthesizeTokenFromLemma(const wchar_t* i_lemma, const wchar_t ** i_gramm
     return synthesizeTokenFromLemmaReturnValue.size();
 }
 
-size_t getParadigmForLemma(const wchar_t* i_lemma, const char* i_language)
+size_t GetParadigmForLemma(const wchar_t* i_lemma, const char* i_language)
 {
      std::vector<wstring> features;
      Tools::Language language = Tools::StringToLanguage(i_language);
@@ -56,7 +56,7 @@ size_t getParadigmForLemma(const wchar_t* i_lemma, const char* i_language)
 }
 
 
-void clearLastReturnValue_()
+void ClearLastReturnValue_()
 {
     int nFeatures = io_val->nFeatures;
     for(int i = 0; i < nFeatures; i++)
@@ -68,11 +68,11 @@ void clearLastReturnValue_()
     io_val = 0;
 }
 
-MorphologyWrapper* wrapCurrentMorphologyValue(Morphology& morphology_value)
+MorphologyWrapper* WrapCurrentMorphologyValue(Morphology& morphology_value)
 {
     if(io_val)
     {
-        clearLastReturnValue_();
+        ClearLastReturnValue_();
     }
     io_val = new MorphologyWrapper;
     io_val->nFeatures = morphology_value.features.size();
@@ -86,55 +86,55 @@ MorphologyWrapper* wrapCurrentMorphologyValue(Morphology& morphology_value)
     return io_val;
 }
 
-const MorphologyWrapper* requestGetGramInfoReturnValue(size_t i_index)
+const MorphologyWrapper* RequestGetGramInfoReturnValue(size_t i_index)
 {
-    return wrapCurrentMorphologyValue(getGramInfoReturnValue[i_index]);
+    return WrapCurrentMorphologyValue(getGramInfoReturnValue[i_index]);
 }
 
-const wchar_t* requestSynthesizeTokenFromLemmaReturnValue(size_t i_index)
+const wchar_t* RequestSynthesizeTokenFromLemmaReturnValue(size_t i_index)
 {
     return synthesizeTokenFromLemmaReturnValue[i_index].c_str();
 }
 
-const size_t requestGetParadigmForLemmaSize(size_t i_index)
+const size_t RequestGetParadigmForLemmaSize(size_t i_index)
 {
     return getParadigmForLemmaReturnValue[i_index].size();
 }
 
-const MorphologyWrapper* requestGetParadigmForLemmaReturnValueMorphology(size_t i_paradigm_index, size_t i_element_index)
+const MorphologyWrapper* RequestGetParadigmForLemmaReturnValueMorphology(size_t i_paradigm_index, size_t i_element_index)
 {
     Morphology& current = getParadigmForLemmaReturnValue[i_paradigm_index][i_element_index];
 
-    return wrapCurrentMorphologyValue(current);
+    return WrapCurrentMorphologyValue(current);
 }
 
-const wchar_t* requestGetParadigmForLemmaReturnValueWordform(size_t i_paradigm_index, size_t i_element_index)
+const wchar_t* RequestGetParadigmForLemmaReturnValueWordform(size_t i_paradigm_index, size_t i_element_index)
 {
     Morphology& current = getParadigmForLemmaReturnValue[i_paradigm_index][i_element_index];
 
     return current.word->c_str();
 }
 
-void cleanGetGramInfoReturnValue()
+void CleanGetGramInfoReturnValue()
 {
     if(io_val)
     {
-        clearLastReturnValue_();
+        ClearLastReturnValue_();
     }
     io_val = 0;
     getGramInfoReturnValue.clear();
 }
 
-void cleanSynthesizeTokenFromLemmaReturnValue()
+void CleanSynthesizeTokenFromLemmaReturnValue()
 {
     synthesizeTokenFromLemmaReturnValue.clear();
 }
 
-void cleanGetParadigmForLemmaReturnValue()
+void CleanGetParadigmForLemmaReturnValue()
 {
     if(io_val)
     {
-        clearLastReturnValue_();
+        ClearLastReturnValue_();
     }
     io_val = 0;
     getParadigmForLemmaReturnValue.clear();

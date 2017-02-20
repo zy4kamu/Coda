@@ -4,44 +4,36 @@
 import cffi, os, unittest, time
 import common
 
-dictionary_lib = None
-ffi = None
+src = """
+/* VARIABLES TO STORE TEMPORARY RESULTS */
+typedef struct
+{
+  wchar_t lemma[80];
+  int nFeatures;
+  wchar_t **features;
+} MorphologyWrapper;
+
+/* DICTIONARY INTERFACE FUNCTIONS */
+void CreateDictionary(const char*  i_language);
+size_t GetGramInfo(const wchar_t* i_token, const char * i_language);
+size_t SynthesizeTokenFromLemma(const wchar_t* i_lemma, const wchar_t ** i_grammarFeatures, size_t i_numberOfFeatures, const char* i_language);
+size_t GetParadigmForLemma(const wchar_t* i_lemma, const char* i_language);
 
 
-def initialize():
-    global dictionary_lib
-    src = """
-    typedef struct
-    {
-      wchar_t lemma[80];
-      int nFeatures;
-      wchar_t **features;
-    } MorphologyWrapper;
+/* GETTING RESULTS FOR PYTHON */
+const MorphologyWrapper* RequestGetGramInfoReturnValue(size_t i_index);
+const wchar_t* RequestSynthesizeTokenFromLemmaReturnValue(size_t i_index);
+const size_t RequestGetParadigmForLemmaSize(size_t i_index);
+const MorphologyWrapper* RequestGetParadigmForLemmaReturnValueMorphology(size_t i_paradigm_index, size_t i_element_index);
+const wchar_t* RequestGetParadigmForLemmaReturnValueWordform(size_t i_paradigm_index, size_t i_element_index);
 
-    void createDictionary(const char*  i_language);
-    size_t getGramInfo(const wchar_t* i_token, const char * i_language);
-    size_t getParadigmForLemma(const wchar_t* i_lemma, const char* i_language);
-    const MorphologyWrapper* requestGetGramInfoReturnValue(size_t i_index);
-    const size_t requestGetParadigmForLemmaSize(size_t i_index);
-    const MorphologyWrapper* requestGetParadigmForLemmaReturnValueMorphology(size_t i_paradigm_index, size_t i_element_index);
-    const wchar_t* requestGetParadigmForLemmaReturnValueWordform(size_t i_paradigm_index, size_t i_element_index);
-    void cleanGetGramInfoReturnValue();
-    size_t synthesizeTokenFromLemma(const wchar_t* i_lemma, const wchar_t ** i_grammarFeatures, size_t i_numberOfFeatures, const char* i_language);
-    const wchar_t* requestSynthesizeTokenFromLemmaReturnValue(size_t i_index);
-    void cleanSynthesizeTokenFromLemmaReturnValue();
-    void cleanGetParadigmForLemmaReturnValue();
-    """
-    # Parse
-    global ffi
-    ffi = cffi.FFI()
-    ffi.cdef(src)
+/* CLEAR MEMORY */
+void CleanGetGramInfoReturnValue();
+void CleanSynthesizeTokenFromLemmaReturnValue();
+void CleanGetParadigmForLemmaReturnValue();
+"""
 
-    # Loadself.features = {}
-
-    full_path = os.path.join(common.get_build_path(), 'libdictionary.so')
-
-    dictionary_lib = ffi.dlopen(full_path)
-
+ffi, dictionary_lib = common.load_cffi_library(src, 'dictionary')
 
 class MorphologicalInformation:
     '''
@@ -71,9 +63,8 @@ class Dictionary:
         Language used for disambiguation (RU, EN, ...)
     '''
     def __init__(self, language):
-        initialize()
         self.dictionary_lib = dictionary_lib
-        self.dictionary_lib.createDictionary(language)
+        self.dictionary_lib.CreateDictionary(language)
         self.language = language
 
     def morphological_information(self, word):
@@ -90,15 +81,15 @@ class Dictionary:
         -------
         out : list of structures MorphologicalInformation: lemma and feature tags (OpenCorpora tagset)
         '''
-        number_of_variants = self.dictionary_lib.getGramInfo(word, self.language)
+        number_of_variants = self.dictionary_lib.GetGramInfo(word, self.language)
         variants = []
         for i in range(number_of_variants):
-            morphology_ptr = self.dictionary_lib.requestGetGramInfoReturnValue(i)
+            morphology_ptr = self.dictionary_lib.RequestGetGramInfoReturnValue(i)
             morphology = MorphologicalInformation()
 	    morphology.init_from_c_ptr(morphology_ptr)
 	    variants.append(morphology)
             
-        self.dictionary_lib.cleanGetGramInfoReturnValue()
+        self.dictionary_lib.CleanGetGramInfoReturnValue()
         return variants
 
     def synthesize_wordform(self, lemma, features):
@@ -120,12 +111,12 @@ class Dictionary:
         for feature in features:
             ffi_feature_list.append(ffi.new("wchar_t[]", feature))
         ffi_features = ffi.new("wchar_t *[]", ffi_feature_list)
-        number_of_variants = self.dictionary_lib.synthesizeTokenFromLemma(lemma, ffi_features, len(features), self.language)
+        number_of_variants = self.dictionary_lib.SynthesizeTokenFromLemma(lemma, ffi_features, len(features), self.language)
         variants = []
         for i in range(number_of_variants):
-            var_ptr = self.dictionary_lib.requestSynthesizeTokenFromLemmaReturnValue(i)
+            var_ptr = self.dictionary_lib.RequestSynthesizeTokenFromLemmaReturnValue(i)
             variants.append(ffi.string(var_ptr))
-        self.dictionary_lib.cleanSynthesizeTokenFromLemmaReturnValue()
+        self.dictionary_lib.CleanSynthesizeTokenFromLemmaReturnValue()
         return variants
 
     def get_paradigms(self, lemma):
@@ -142,23 +133,23 @@ class Dictionary:
         out : list of paradigms. Each paradigm is the dictionary of wordforms with their MorphologicalInformation structures (OpenCorpora tagset)
         '''
         lemma = lemma.lower()
-        number_of_paradigms = self.dictionary_lib.getParadigmForLemma(lemma, self.language)
+        number_of_paradigms = self.dictionary_lib.GetParadigmForLemma(lemma, self.language)
         paradigms = []
         for i in range(number_of_paradigms):
-            number_of_elements = self.dictionary_lib.requestGetParadigmForLemmaSize(i)
+            number_of_elements = self.dictionary_lib.RequestGetParadigmForLemmaSize(i)
             new_paradigm = {}
             for j in range(number_of_elements):
-                morphology_ptr = self.dictionary_lib.requestGetParadigmForLemmaReturnValueMorphology(i, j)
+                morphology_ptr = self.dictionary_lib.RequestGetParadigmForLemmaReturnValueMorphology(i, j)
                 morphology = MorphologicalInformation()
                 morphology.init_from_c_ptr(morphology_ptr)
-                word = ffi.string(self.dictionary_lib.requestGetParadigmForLemmaReturnValueWordform(i, j))
+                word = ffi.string(self.dictionary_lib.RequestGetParadigmForLemmaReturnValueWordform(i, j))
                 if word in new_paradigm:
                     new_paradigm[word].append(morphology)
                 else:
                     new_paradigm[word] = [morphology]
             paradigms.append(new_paradigm)
 
-            self.dictionary_lib.cleanGetParadigmForLemmaReturnValue()
+            self.dictionary_lib.CleanGetParadigmForLemmaReturnValue()
             return paradigms
 
 
