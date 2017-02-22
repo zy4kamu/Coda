@@ -68,9 +68,13 @@ vector<WordForm> DictionaryTrieWordFormByFeatures::getWordFormByFeatures(wstring
 					if (includeLinkedLemmas)
 					{
 						vector<DictionaryNodeModel*> linkFrom = _nodeModel->getLinkFrom();
-						for (int i = 0; i < (int) linkFrom.size(); ++i)
+                    for (int i = 0; i < (int) linkFrom.size(); ++i)
 						{
 							dictionaryNodeModels.insert(linkFrom.at(i));
+                            vector<DictionaryNodeModel*> second_order_links = linkFrom.at(i)->getLinkFrom();
+                            for (int j = 0; j < (int) second_order_links.size(); ++j) {
+                                dictionaryNodeModels.insert(second_order_links[j]);
+                            }
 						}
 					}
 				}
@@ -207,7 +211,8 @@ vector<WordForm> DictionaryTrieWordFormByFeatures::getWordFormByFeatures(wstring
 			}
 		}
 	}
-	return _result;
+
+    return _result;
 }
 
 vector<WordForm> DictionaryTrieWordFormByFeatures::getWordFormByFeatures(wstring _word, vector<wstring> features, bool includeLinkedLemmas)

@@ -16,10 +16,10 @@ int main(int argc, char *argv[])
 //    wcout << "Time = " << (finish - start) * 1000 / CLOCKS_PER_SEC << " ms" << endl;
 //	wcout << "Done! " << endl;
     DictionaryOps::CreateDictionary("RU");
-    int nParses = DictionaryOps::GetGramInfo(L"россия", "RU");
+    int nParses = DictionaryOps::GetGramInfo(L"закуплена", "RU");
     wcout << nParses;
-    const wchar_t* features[8]{L"VERB", L"perf", L"sing", L"masc", L"past", L"indc", L"intr"};
-    DictionaryOps::SynthesizeTokenFromLemma(L"пригрозить", features, 7, "RU");
+    const wchar_t* features[8]{L"PRTS", L"femn", L"sing", L"perf", L"past", L"pssv"};
+    DictionaryOps::SynthesizeTokenFromLemma(L"закупить", features, 6, "RU");
 
     DictionaryOps::GetParadigmForLemma(L"пригрозить", "RU");
 	return 0;
