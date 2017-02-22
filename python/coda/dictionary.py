@@ -166,17 +166,23 @@ class DictionaryTest(unittest.TestCase):
         print "----Testing wordform synthesis. Set word 'Россия' into Genitive case--"
         test_word = u"Россия"
         dictionary = Dictionary("RU")
-        test_variant = dictionary.synthesize_wordform(test_word, [u"NOUN", u"inan", u"femn", u"sing", u"Sgtm", u"gent", u"Geox"])[0]
+        variants = dictionary.synthesize_wordform(test_word, [u'NOUN', u'inan', u'femn', u'sing', u'Sgtm', u'gent', u'Geox'])
+        test_variant = u''
+        if variants:
+            test_variant = variants[0]
         print "Synthesized variant: {}".format(test_variant.encode('utf-8'))
-        print "----Testing wordform synthesis. Set word 'пригрозить' into 'пригрозил' --"
-        test_word = u"пригрозить"
+        print "----Testing wordform synthesis. Set word 'закупить' into 'закуплена' --"
+        test_word = u"закупить"
         dictionary = Dictionary("RU")
-        test_variant = dictionary.synthesize_wordform(test_word, [u'VERB', u'perf', u'sing', u'masc', u'indc', u'past'])[0]
+        variants = dictionary.synthesize_wordform(test_word, [u'PRTS', u'femn', u'sing', u'perf', u'past', u'pssv'])
+        test_variant = u''
+        if variants:
+            test_variant = variants[0]
         print "Synthesized variant: {}".format(test_variant.encode('utf-8'))
 
     def test_morphological_info(self):
         print "----Test morphological info. Testing word 'России'-------------------"
-        test_word = u"России"
+        test_word = u"закуплена"
         dictionary = Dictionary("RU")
         morphological_variants = dictionary.morphological_information(test_word)
         print "Number of variants: {}".format(len(morphological_variants))
@@ -185,12 +191,12 @@ class DictionaryTest(unittest.TestCase):
             print "Features: ", variant.features
 
     def test_paradigm(self):
-        print "----Test paradigm. Testing word 'Россия'-------------------"
-        test_word = u"Россия"
+        print "----Test paradigm. Testing word 'закупить'-------------------"
+        test_word = u"закупить"
         dictionary = Dictionary("RU")
         paradigms = dictionary.get_paradigms(test_word)
         print "Number of paradigms: {}".format(len(paradigms))
-        number = 0
+        number = 0 
         for paradigm in paradigms:
 	    print "=====Paradigm {}====".format(number)
         number+=1

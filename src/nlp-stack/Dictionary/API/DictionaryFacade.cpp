@@ -48,9 +48,10 @@ DictionaryFacade::DictionaryFacade(Tools::Language i_language)
     if (i_language == Tools::RU)
     {
         m_dicInterface = DictionaryInterface::CreateDictionary();
+        m_dicInterface->setMainWordFormFromLinkedLemmas(true);
         m_morphologicalDictionary = make_shared<MorphologicalDictionary>(BIN_DIC_FILE_PATH_RUSSIAN);
-        m_morphologicalDictionary->setPrediction(true);
-        //m_morphologicalDictionary->enableE(true);
+        m_morphologicalDictionary->setPrediction(false);
+        m_morphologicalDictionary->enableE(true);
     }
     else if (i_language == Tools::EN)
     {
