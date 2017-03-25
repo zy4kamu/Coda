@@ -135,5 +135,3 @@ add_definitions(-DTOOLS_OS_SCRIPT_FOLDER=\"${PROJECT_ROOT_DIR}/utils/Tools/OS/Sc
 
 add_subdirectory(src)
 add_subdirectory(test)
-
-
