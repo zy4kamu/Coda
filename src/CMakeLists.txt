@@ -32,11 +32,4 @@ add_subdirectory(utils/TagsetConstants)
 add_subdirectory(utils/TagsetConverter)
 add_subdirectory(utils/Tools)
 
-
-
-
-
-
-
-
-
+add_subdirectory(c_api)
