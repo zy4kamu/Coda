@@ -49,7 +49,7 @@ class MorphologicalInformation:
         number_of_features = morphology_ptr.nFeatures
         for feature_id in range(number_of_features):
             self.features.append(ffi.string(morphology_ptr.features[feature_id]))
-	    
+            
 
 class Dictionary:
     '''
@@ -86,8 +86,8 @@ class Dictionary:
         for i in range(number_of_variants):
             morphology_ptr = self.dictionary_lib.RequestGetGramInfoReturnValue(i)
             morphology = MorphologicalInformation()
-	    morphology.init_from_c_ptr(morphology_ptr)
-	    variants.append(morphology)
+            morphology.init_from_c_ptr(morphology_ptr)
+            variants.append(morphology)
             
         self.dictionary_lib.CleanGetGramInfoReturnValue()
         return variants
@@ -149,8 +149,8 @@ class Dictionary:
                     new_paradigm[word] = [morphology]
             paradigms.append(new_paradigm)
 
-            self.dictionary_lib.CleanGetParadigmForLemmaReturnValue()
-            return paradigms
+        self.dictionary_lib.CleanGetParadigmForLemmaReturnValue()
+        return paradigms
 
 
 
@@ -163,8 +163,8 @@ class DictionaryTest(unittest.TestCase):
         self.assertLess(spent_time, 10e-3)
 
     def test_wordform_synthesis(self):
-        print "----Testing wordform synthesis. Set word 'Россия' into Genitive case--"
         test_word = u"Россия"
+        print "----Testing wordform synthesis. Set word '%s to Genitive case--" % test_word
         dictionary = Dictionary("RU")
         variants = dictionary.synthesize_wordform(test_word, [u'NOUN', u'inan', u'femn', u'sing', u'Sgtm', u'gent', u'Geox'])
         test_variant = u''
@@ -192,18 +192,18 @@ class DictionaryTest(unittest.TestCase):
 
     def test_paradigm(self):
         print "----Test paradigm. Testing word 'закупить'-------------------"
-        test_word = u"закупить"
+        test_word = u"сине-зеленый"
         dictionary = Dictionary("RU")
         paradigms = dictionary.get_paradigms(test_word)
         print "Number of paradigms: {}".format(len(paradigms))
         number = 0 
         for paradigm in paradigms:
-	    print "=====Paradigm {}====".format(number)
-        number+=1
-        for word in paradigm:
-            print "{} :".format(word.encode('utf-8'))
-            for element in paradigm[word]:
-                print "\t{} {}".format(element.lemma.encode('utf-8'), element.features)
+            print "=====Paradigm {}====".format(number)
+            number+=1
+            for word in paradigm:
+                print "{} :".format(word.encode('utf-8'))
+                for element in paradigm[word]:
+                    print "\t{} {}".format(element.lemma.encode('utf-8'), element.features)
 
 if __name__ == '__main__':
     unittest.main()
