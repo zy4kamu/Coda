@@ -107,7 +107,7 @@ public:
 	 * @brief set main word form from linked lemmas
 	 * @date 2014-03-17
 	 */
-	virtual void setMainWordFormFromLinkedLemmas(bool _mainWordFormFromLinkedLemmas) = 0;
+    virtual void setMainWordFormFromLinkedLemmas(bool _mainWordFormFromLinkedLemmas) = 0;
 
     /**
      * @brief returns the whole paradigm of the given lemma
@@ -119,6 +119,7 @@ public:
     virtual DictionaryTrieRebuild* getDictionaryTrie(void) = 0;
     virtual void setDictionaryLevel(int _dicLevel) = 0;
     virtual void enableRules(bool _useRules) = 0;
+    virtual void setIgnoreE(bool _ignoreE) = 0;
 };
 
 #endif /* _DICTIONARY_INTERFACE_H_ */

@@ -49,7 +49,7 @@ class MorphologicalInformation:
         number_of_features = morphology_ptr.nFeatures
         for feature_id in range(number_of_features):
             self.features.append(ffi.string(morphology_ptr.features[feature_id]))
-	    
+            
 
 class Dictionary:
     '''
@@ -86,13 +86,13 @@ class Dictionary:
         for i in range(number_of_variants):
             morphology_ptr = self.dictionary_lib.RequestGetGramInfoReturnValue(i)
             morphology = MorphologicalInformation()
-	    morphology.init_from_c_ptr(morphology_ptr)
-	    variants.append(morphology)
+            morphology.init_from_c_ptr(morphology_ptr)
+            variants.append(morphology)
             
         self.dictionary_lib.CleanGetGramInfoReturnValue()
         return variants
 
-    def synthesize_wordform(self, lemma, features):
+    def synthesize_wordform(self, word, features):
         '''
         Get correct wordform based for given lemma and morphological features
 
@@ -106,20 +106,22 @@ class Dictionary:
         -------
         out : list of unicode strings. Correct wordforms for given lemma and features
         '''
-        lemma = lemma.lower()
+        lemmas = [variant.lemma for variant in self.morphological_information(word)]
+        lemmas = list(set(lemmas))
         ffi_feature_list = []
         for feature in features:
             ffi_feature_list.append(ffi.new("wchar_t[]", feature))
         ffi_features = ffi.new("wchar_t *[]", ffi_feature_list)
-        number_of_variants = self.dictionary_lib.SynthesizeTokenFromLemma(lemma, ffi_features, len(features), self.language)
         variants = []
-        for i in range(number_of_variants):
-            var_ptr = self.dictionary_lib.RequestSynthesizeTokenFromLemmaReturnValue(i)
-            variants.append(ffi.string(var_ptr))
-        self.dictionary_lib.CleanSynthesizeTokenFromLemmaReturnValue()
+        for lemma in lemmas:
+            number_of_variants = self.dictionary_lib.SynthesizeTokenFromLemma(lemma, ffi_features, len(features), self.language)
+            for i in range(number_of_variants):
+                var_ptr = self.dictionary_lib.RequestSynthesizeTokenFromLemmaReturnValue(i)
+                variants.append(ffi.string(var_ptr))
+            self.dictionary_lib.CleanSynthesizeTokenFromLemmaReturnValue()
         return variants
 
-    def get_paradigms(self, lemma):
+    def get_paradigms(self, word):
         '''
         Get full paradigms for lemma
 
@@ -132,26 +134,27 @@ class Dictionary:
         -------
         out : list of paradigms. Each paradigm is the dictionary of wordforms with their MorphologicalInformation structures (OpenCorpora tagset)
         '''
-        lemma = lemma.lower()
-        number_of_paradigms = self.dictionary_lib.GetParadigmForLemma(lemma, self.language)
+        lemmas = [variant.lemma for variant in self.morphological_information(word)]
+        lemmas = list(set(lemmas))
         paradigms = []
-        for i in range(number_of_paradigms):
-            number_of_elements = self.dictionary_lib.RequestGetParadigmForLemmaSize(i)
-            new_paradigm = {}
-            for j in range(number_of_elements):
-                morphology_ptr = self.dictionary_lib.RequestGetParadigmForLemmaReturnValueMorphology(i, j)
-                morphology = MorphologicalInformation()
-                morphology.init_from_c_ptr(morphology_ptr)
-                word = ffi.string(self.dictionary_lib.RequestGetParadigmForLemmaReturnValueWordform(i, j))
-                if word in new_paradigm:
-                    new_paradigm[word].append(morphology)
-                else:
-                    new_paradigm[word] = [morphology]
-            paradigms.append(new_paradigm)
+        for lemma in lemmas:
+            number_of_paradigms = self.dictionary_lib.GetParadigmForLemma(lemma, self.language)
+            for i in range(number_of_paradigms):
+                number_of_elements = self.dictionary_lib.RequestGetParadigmForLemmaSize(i)
+                new_paradigm = {}
+                for j in range(number_of_elements):
+                    morphology_ptr = self.dictionary_lib.RequestGetParadigmForLemmaReturnValueMorphology(i, j)
+                    morphology = MorphologicalInformation()
+                    morphology.init_from_c_ptr(morphology_ptr)
+                    word = ffi.string(self.dictionary_lib.RequestGetParadigmForLemmaReturnValueWordform(i, j))
+                    if word in new_paradigm:
+                        new_paradigm[word].append(morphology)
+                    else:   
+                        new_paradigm[word] = [morphology]
+                paradigms.append(new_paradigm)
 
-            self.dictionary_lib.CleanGetParadigmForLemmaReturnValue()
-            return paradigms
-
+        self.dictionary_lib.CleanGetParadigmForLemmaReturnValue()
+        return paradigms
 
 
 class DictionaryTest(unittest.TestCase):
@@ -163,16 +166,17 @@ class DictionaryTest(unittest.TestCase):
         self.assertLess(spent_time, 10e-3)
 
     def test_wordform_synthesis(self):
-        print "----Testing wordform synthesis. Set word 'Россия' into Genitive case--"
-        test_word = u"Россия"
+        test_word = u"тетя"
+        print (u"----Testing wordform synthesis. Set word '%s' to Genitive case--" % test_word)
         dictionary = Dictionary("RU")
-        variants = dictionary.synthesize_wordform(test_word, [u'NOUN', u'inan', u'femn', u'sing', u'Sgtm', u'gent', u'Geox'])
+        variants = dictionary.synthesize_wordform(test_word, [u'NOUN', u'femn', u'sing', u'gent'])
         test_variant = u''
         if variants:
             test_variant = variants[0]
         print "Synthesized variant: {}".format(test_variant.encode('utf-8'))
-        print "----Testing wordform synthesis. Set word 'закупить' into 'закуплена' --"
         test_word = u"закупить"
+        expected_result = u"закуплена"
+        print (u"----Testing wordform synthesis. Set word '%s' into '%s' --" % (test_word, expected_result))
         dictionary = Dictionary("RU")
         variants = dictionary.synthesize_wordform(test_word, [u'PRTS', u'femn', u'sing', u'perf', u'past', u'pssv'])
         test_variant = u''
@@ -181,8 +185,8 @@ class DictionaryTest(unittest.TestCase):
         print "Synthesized variant: {}".format(test_variant.encode('utf-8'))
 
     def test_morphological_info(self):
-        print "----Test morphological info. Testing word 'России'-------------------"
-        test_word = u"закуплена"
+        test_word = u"зеленый"
+        print (u"----Test morphological info. Testing word '%s'-------------------" % test_word)
         dictionary = Dictionary("RU")
         morphological_variants = dictionary.morphological_information(test_word)
         print "Number of variants: {}".format(len(morphological_variants))
@@ -191,19 +195,19 @@ class DictionaryTest(unittest.TestCase):
             print "Features: ", variant.features
 
     def test_paradigm(self):
-        print "----Test paradigm. Testing word 'закупить'-------------------"
-        test_word = u"закупить"
+        test_word = u"сине-зеленый"
+        print (u"----Test paradigm. Testing word '%s'-------------------" % test_word)
         dictionary = Dictionary("RU")
         paradigms = dictionary.get_paradigms(test_word)
         print "Number of paradigms: {}".format(len(paradigms))
         number = 0 
         for paradigm in paradigms:
-	    print "=====Paradigm {}====".format(number)
-        number+=1
-        for word in paradigm:
-            print "{} :".format(word.encode('utf-8'))
-            for element in paradigm[word]:
-                print "\t{} {}".format(element.lemma.encode('utf-8'), element.features)
+            print "=====Paradigm {}=====".format(number)
+            number+=1
+            for word in paradigm:
+                print "{} :".format(word.encode('utf-8'))
+                for element in paradigm[word]:
+                    print "\t{} {}".format(element.lemma.encode('utf-8'), element.features)
 
 if __name__ == '__main__':
     unittest.main()

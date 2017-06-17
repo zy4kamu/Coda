@@ -49,6 +49,8 @@ DictionaryFacade::DictionaryFacade(Tools::Language i_language)
     {
         m_dicInterface = DictionaryInterface::CreateDictionary();
         m_dicInterface->setMainWordFormFromLinkedLemmas(true);
+        // this part works only with lemmas, got from m_morphologicalDictionary. Lemma should be already preprocessed
+        m_dicInterface->setIgnoreE(false);
         m_morphologicalDictionary = make_shared<MorphologicalDictionary>(BIN_DIC_FILE_PATH_RUSSIAN);
         m_morphologicalDictionary->setPrediction(false);
         m_morphologicalDictionary->enableE(true);
