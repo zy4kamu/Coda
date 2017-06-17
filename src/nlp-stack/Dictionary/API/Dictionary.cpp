@@ -20,11 +20,11 @@ Dictionary::Dictionary(const string & dictionaryFile, int _dicLevel)
 {
     pathToData = BIN_DIC_DATA_PATH;
 	//wcout << "###### Create dictionary ... " << endl;
-	dicLevel = _dicLevel;
+    dicLevel = _dicLevel;
 
     ignoreE = false;
     hyphenSplit = false;
-	tools = new DictionaryTools(this);
+    tools = new DictionaryTools(this);
 
     trie = new DictionaryTrieRebuild(this, dictionaryFile);
 
